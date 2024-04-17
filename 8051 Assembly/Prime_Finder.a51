@@ -1,4 +1,5 @@
 ; This is an 8051 asm file.
+; Find prime number and write it, starting at RAM 0x30.
 ; Creator: YHC03
 ; Date: 24/04/17
 ORG 0H
