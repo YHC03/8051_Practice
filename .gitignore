@@ -1,0 +1,24 @@
+#8051 Assembly Related Files
+*.lst
+*.LST
+*.hex
+*.HEX
+
+# 8051 C Related Files
+*.obj
+*.OBJ
+*.ihx
+*.IHX
+*.map
+*.MAP
+*.mem
+*.MEM
+*.rel
+*.REL
+*.rst
+*.RST
+*.sym
+*.SYM
+*.dev
+*.DEV
+*.lnk
