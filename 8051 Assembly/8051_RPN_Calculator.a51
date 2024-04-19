@@ -135,12 +135,17 @@ INC R7 ; Second -> Operator
 MOV 08, #0H ; Lower 8bit
 MOV 09, #0H ; Higher 8bit
 OperatorLoop:
+CALL DISPLAY
 MOV A, #1EH
 ANL A, P2
 CJNE A, #1EH, OperatorNext ; Nothing
 SJMP OperatorLoop
 
+; Datum on 0x32
+; 1 for Answer less then 0
+; 0 for Answer greater, or equals to 0
 OperatorNext:
+MOV 32H, #0H ; 0 for +, 1 for -
 RRC A ; Neglect Enter Data
 RRC A ; Divide Command
 JNC DIVIDE
@@ -161,15 +166,24 @@ INC R7
 JMP INF_LOOP
 
 ; SUBTRACT Command
-SUBTRACT: MOV A, R4
+SUBTRACT:
+MOV A, R4
 CLR C
 SUBB A, R5
-MOV 08, A
+JNC NEXT_Cmd ; Check the result is less then 0
+
+INC 32H
+CLR C
+MOV A, R5
+SUBB A, R4
+
+NEXT_Cmd: MOV 08, A
 INC R7
 JMP INF_LOOP
 
 ; MULTIPLY Command
-MULTIPLY: MOV A, R4
+MULTIPLY:
+MOV A, R4
 MOV B, R5
 MUL AB
 MOV 08, A
@@ -178,7 +192,13 @@ INC R7
 JMP INF_LOOP
 
 ; DIVIDE Command
-DIVIDE: MOV A, R4
+DIVIDE:
+MOV A, R5
+JNZ Next_Divide ; Find if divide by 0
+INC R7
+JMP INF_LOOP
+
+Next_Divide: MOV A, R4
 MOV B, R5
 DIV AB
 MOV 08, A
@@ -297,21 +317,11 @@ SETB P0.7
 RET
 
 ; Print Operator
-PrintOperator: CJNE R7, #1, PrintResult
-; Just Print 0
-CLR P0.7
+PrintOperator: CJNE R7, #2, PrintResult
+; Just Print .(dot)
+SETB P0.7
 ANL P3, #11100111B
-MOV A, #0H
-MOVC A, @A+DPTR
-MOV P1, A
-SETB P0.7
-
-CLR P0.7
-SETB P3.3
-MOV A, #0H
-MOVC A, @A+DPTR
-MOV P1, A
-SETB P0.7
+MOV P1, #7FH
 RET
 
 ; Print Result
@@ -335,6 +345,15 @@ SETB P0.7
 
 CLR P0.7
 XRL P3, #00011000B
+
+; Print - if the answer is less then 0
+MOV A, 32H
+JZ Print3rd
+MOV P1, #0BFH 
+SETB P0.7
+RET
+
+Print3rd:
 MOV A, #0FH
 ANL A, 09
 MOVC A, @A+DPTR
