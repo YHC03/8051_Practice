@@ -5,7 +5,7 @@
 ; Using EdSim51DI's Unmodified circuit.
 ; 8051 with 12MHz Clock
 ; Delay is not accurate.
-; Date: 2024/4/17-2024/4/19
+; Date: 2024/4/17-2024/4/20
 ; Written By: YHC03
 ;
 ; Switch Usage
@@ -61,18 +61,20 @@ RET
 
 
 
-;Delay 1 Second
+; Delay a second
+; Memory address using for delay loop: 0x18, 0x19
 DELAY:
-MOV 18H, #2
-LOOP1: MOV 19H, #108
-LOOP2: MOV 1AH, #100
-LOOP3: ACALL PRINT
+MOV 18H, #108
+LOOP1: MOV 19H, #200
+LOOP2: ACALL PRINT
 MOV C, P2.0
 JC Continue
 ACALL SETTINGS
+; After Settings, Reset delay time
+MOV 18H, #108
+MOV 19H, #200
 
 Continue:
-DJNZ 1AH, LOOP3
 DJNZ 19H, LOOP2
 DJNZ 18H, LOOP1
 RET
