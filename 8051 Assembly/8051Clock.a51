@@ -38,12 +38,15 @@ JNZ Final_Second ; Check Minute
 MOV R2, #0H ; Clear Second
 CJNE R4, #2H, Final_Second
 SJMP IncreaseMinute ; In Running Mode, Increase Minute
-Final_Second: RET
+
+Final_Second: SETB P0.7 ; Turn On Segments When Calculation Finishes
+RET
 
 
 
 ; Increase Minute
 IncreaseMinute:
+CLR P0.7 ; Turn Off Segments While in Calculation
 INC R3 ; Increase Minute
 MOV A, R3
 ANL PSW, #00111011B
