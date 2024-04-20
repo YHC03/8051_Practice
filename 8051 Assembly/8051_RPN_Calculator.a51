@@ -13,13 +13,12 @@
 ; P2.1: Divide
 ;
 ; Create Date: 24/4/18
-; Update Date: 24/4/19
+; Update Date: 24/4/20
 ; Creator: YHC03
 ;
 ;
-; Known Issues(24/4/19)
-; It Represents HEX Output(Not Decimal)
-; In Add and Subtract Operation, using DA Command will be a solution.
+; Known Issues(24/4/20)
+; It does not represents value under 1 in divide mode.
 ;
 
 ORG 0H
@@ -34,6 +33,7 @@ MOV P2, #1FH ; Put Read Mode on Using Switches
 ; Second Data Register: R5
 ; Point Location Register: R6 (Unused Now-24/04/19)
 ; Current Location Register: R7(0: First Number, 1: Second Number, 2: Operator, 3: Result)
+; Temporary Register: R10-R13 (0x0A-0x0D)
 
 MOV R7, #0H
 INF_LOOP:
@@ -159,35 +159,48 @@ SJMP ADDER ; Otherwise, Add Command
 ; ADD Command
 ADDER: MOV A, R4
 ADD A, R5
-JNC Adder_Fin
-INC 09
-Adder_Fin: MOV 08, A
-INC R7
+MOV 0AH, A ; Temporary Save
+DA A
+MOV 08, A ; Packed BCD of value under 100 
+
+MOV A, 0AH
+CJNE A, #100, Adder_Next
+Adder_Next: JC Adder_Fin ; Answer<99
+INC 09 
+; as 99+99=198<200, Increase another value of 0x09 is not required
+Adder_Fin: INC R7
 JMP INF_LOOP
 
 ; SUBTRACT Command
 SUBTRACT:
+ACALL Decimal_to_Hex ; DEC to HEX Conversion
 MOV A, R4
 CLR C
 SUBB A, R5
 JNC NEXT_Cmd ; Check the result is less then 0
 
+; Answer if less then 0
 INC 32H
-CLR C
 MOV A, R5
+CLR C
 SUBB A, R4
 
-NEXT_Cmd: MOV 08, A
+NEXT_Cmd:
+; as DA command does not works, so manually calculate.
+ACALL Manual_DA
+MOV 08H, 0AH
 INC R7
 JMP INF_LOOP
 
 ; MULTIPLY Command
 MULTIPLY:
+ACALL Decimal_to_Hex ; DEC to HEX Conversion
 MOV A, R4
 MOV B, R5
 MUL AB
 MOV 08, A
 MOV 09, B
+ACALL HEX_to_Decimal_16Bit ; HEX to DEC Conversion
 INC R7
 JMP INF_LOOP
 
@@ -197,13 +210,142 @@ MOV A, R5
 JNZ Next_Divide ; Find if divide by 0
 INC R7
 JMP INF_LOOP
-
-Next_Divide: MOV A, R4
+Next_Divide:
+ACALL Decimal_to_Hex
+MOV A, R4
 MOV B, R5
 DIV AB
-MOV 08, A
+
+ACALL Manual_DA
+MOV 08H, 0AH
 INC R7
 JMP INF_LOOP
+
+
+
+; Change Decimal Number in R4, R5 Register to HEX.
+Decimal_to_Hex:
+MOV A, R4
+ANL A, #0F0H ; Mask Upper 4-Bits(Decimal)
+SWAP A
+MOV B, #10
+MUL AB ; Calculation Results in HEX
+MOV B, A
+MOV A, R4
+ANL A, #0FH ; Mask Under 4-Bits(Decimal (Equals to HEX))
+ADD A, B
+MOV R4, A ; Return to Original Repository
+
+MOV A, R5
+ANL A, #0F0H ; Mask Upper 4-Bits(Decimal)
+SWAP A
+MOV B, #10
+MUL AB ; Calculation Results HEX
+MOV B, A
+MOV A, R5
+ANL A, #0FH ; Mask Under 4-Bits(Decimal (Equals to HEX))
+ADD A, B
+MOV R5, A ; Return to Original Repository
+
+RET
+
+
+; Returns decimal data at 0x0A, when A stores the target number and A is less then 100
+MANUAL_DA:
+MOV B, #10
+DIV AB
+SWAP A
+ADD A, B
+MOV 0AH, A
+RET
+
+
+
+; R8 For Under byte, R9 For Upper Byte
+; 0x0A for temporary use
+; 0x0B, 0x0C, 0x0D for temporary set use
+; 0x32, 0x33 -> 0x08, 0x09
+HEX_to_Decimal_16Bit:
+; The Result is HEX 4-Digits. Let's view as (4)(3)(2)(1).
+
+; Last Decimal Digit
+;(4->3)->2->1
+MOV A, 09H
+MOV B, #10
+DIV AB
+
+;4->(3->2)->1
+MOV 0BH, A
+MOV A, B
+SWAP A
+MOV 0AH, A
+
+MOV A, #0F0H
+ANL A, 08H
+SWAP A
+ADD A, 0AH
+
+MOV B, #10
+DIV AB
+
+; 4->3->(2->1)
+MOV 0CH, A
+MOV A, B
+SWAP A
+MOV 0AH, A
+
+MOV A, #0FH
+ANL A, 08H
+ADD A, 0AH
+
+MOV B, #10
+DIV AB ; B is first decimal digit
+
+MOV 32H, B
+MOV 0DH, A
+
+; Next Digit
+; (3->2)->1
+MOV A, 0BH
+SWAP A
+ADD A, 0CH
+MOV B, #10
+
+DIV AB
+
+; 3->(2->1)
+MOV 0BH, A
+MOV A, B
+SWAP A
+ADD A, 0DH
+MOV B, #10
+DIV AB
+
+MOV 0CH, A
+MOV A, B ; B is second decimal digit
+SWAP A
+ADD A, 32H ; Create a Packed BCD
+MOV 32H, A
+
+; First 2 decimal digits
+; (2->1)
+MOV A, 0BH
+SWAP A
+ADD A, 0CH
+MOV B, #10
+DIV AB
+
+SWAP A ; HEX maximum of A is 5
+ADD A, B ; Create a Packed BCD
+MOV 33H, A
+
+; Return the values to Original Memory
+MOV 08H, 32H
+MOV 09H, 33H
+
+RET
+
+
 
 ; Datum on 'B' Address
 ; 1-9 : 1-9
@@ -372,7 +514,8 @@ SETB P0.7
 RET
 
 ; Segment data for HEX numbers
-ORG 700H
-segData: DB 0C0H, 0F9H, 0A4H, 0B0H, 99H, 92H, 82H, 0D8H, 80H, 90H, 88H, 83H, 0C6H, 0A1H, 86H, 8EH
+ORG 1000H
+segData: DB 0C0H, 0F9H, 0A4H, 0B0H, 99H, 92H, 82H, 0D8H, 80H, 90H ; 0 to 9
+DB 88H, 83H, 0C6H, 0A1H, 86H, 8EH ; A to F
 
 END
