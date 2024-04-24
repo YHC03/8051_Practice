@@ -13,15 +13,19 @@
 ; P2.1: Divide
 ;
 ; Create Date: 24/4/18
-; Update Date: 24/4/22
+; Update Date: 24/4/24
 ; Creator: YHC03
 ;
 ;
-; Known Issues(24/4/20)
+; Known Issues(24/4/24)
 ; It does not represents value under 1 in divide mode.
 ;
 
 ORG 0H
+LJMP MAIN
+
+ORG 30H
+MAIN:
 MOV SP, #10H ; Stack Pointer Location Change
 MOV P0, #0FFH ; Put Read Mode on Keypad
 MOV P2, #1FH ; Put Read Mode on Using Switches

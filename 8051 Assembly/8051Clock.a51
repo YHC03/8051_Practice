@@ -5,7 +5,7 @@
 ; Using EdSim51DI's Unmodified circuit.
 ; 8051 with 12MHz Clock
 ; Delay is not accurate.
-; Date: 2024/4/17-2024/4/20
+; Date: 2024/4/17-2024/4/24
 ; Written By: YHC03
 ;
 ; Switch Usage
@@ -13,6 +13,10 @@
 ; P2.1 : Increase Minute or Second
 
 ORG 0H
+LJMP MAIN
+
+ORG 30H
+MAIN:
 MOV P2, #03H
 MOV R4, #2H
 
