@@ -13,7 +13,7 @@
 ; P2.1: Divide
 ;
 ; Create Date: 24/4/18
-; Update Date: 24/4/24
+; Update Date: 24/4/25
 ; Creator: YHC03
 ;
 ;
@@ -235,27 +235,24 @@ INF_LOOP:
 
 
 ; Change Decimal Number in R4, R5 Register to HEX.
+; R0 for temporary use
 Decimal_to_Hex:
 	MOV A, R4
-	ANL A, #0F0H ; Mask Upper 4-Bits(Decimal)
+	MOV R0, #0H ; Where under 4-bits stored. R0's address is 0x00.
+	XCHD A, @R0 ; Move under 4-bits to R0 register.
 	SWAP A
 	MOV B, #10
 	MUL AB ; Calculation Results in HEX
-	MOV B, A
-	MOV A, R4
-	ANL A, #0FH ; Mask Under 4-Bits(Decimal (Equals to HEX))
-	ADD A, B
+	ADD A, R0
 	MOV R4, A ; Return to Original Repository
 
 	MOV A, R5
-	ANL A, #0F0H ; Mask Upper 4-Bits(Decimal)
+	MOV R0, #0 ; Where under 4-bits stored. R0's address is 0x00.
+	XCHD A, @R0 ; Move under 4-bits to R0 register
 	SWAP A
 	MOV B, #10
 	MUL AB ; Calculation Results HEX
-	MOV B, A
-	MOV A, R5
-	ANL A, #0FH ; Mask Under 4-Bits(Decimal (Equals to HEX))
-	ADD A, B
+	ADD A, R0
 	MOV R5, A ; Return to Original Repository
 
 RET
