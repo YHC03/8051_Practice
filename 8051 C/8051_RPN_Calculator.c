@@ -15,6 +15,7 @@
 * P2.1: Divide
 *
 * Create Date: 24/4/25
+* Update Date : 24/4/27
 *
 * Known Issues(24/4/25)
 * Currently not works well
@@ -66,7 +67,7 @@ void printSeg()
 		P1=segData[tmp];
 		return;
 	case 2:
-		P3=P3&(0xE7);
+		P3=0xE7;
 		P1=0x7F; // Print .
 		return;
 	case 3:
@@ -78,7 +79,7 @@ void printSeg()
 			P3 = P3 + 0x08; // Use Third Segment
 			tmp=(unsigned char)(((-result)/10)%10);
 			P1=segData[tmp];
-			P3=P3^(0x18); // Use Second Segment
+			P3 = P3 + 0x08; // Use Second Segment
 			P1=0xBF; // Print -
 		}else{
 			P3=0xE7; // Use Last Segment
@@ -109,27 +110,10 @@ void pack(unsigned char* target, unsigned char input)
 	*target += input;
 }
 
-// Numeric Key Find
-unsigned char keyFind()
-{
-	unsigned char answer=keyDetect();
-	if(answer!=12)
-	{
-		if(mode==3)
-		{
-			mode = 0;
-		}
-		keyUndetect();
-	}
-	return answer;
-}
-
-
-
 // Numeric Key Detection
 unsigned char keyDetect()
 {
-	unsigned char foundNum=0;
+	unsigned char foundNum=12;
 	P0=0xF0;
 	if(P0==0xF0)
 	{
@@ -199,6 +183,21 @@ void keyUndetect()
 	return;
 }
 
+// Numeric Key Find
+unsigned char keyFind()
+{
+	unsigned char answer=keyDetect();
+	if(answer!=12)
+	{
+		if(mode==3)
+		{
+			mode = 0;
+		}
+		keyUndetect();
+	}
+	return answer;
+}
+
 // Enter Key Undetect Wait
 void enterUndetect()
 {
@@ -248,7 +247,6 @@ void calculate(unsigned char operator)
 	}
 	return;
 }
-
 
 // Operator Detect
 void operatorDetect()
