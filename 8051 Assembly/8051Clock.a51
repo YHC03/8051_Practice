@@ -4,8 +4,8 @@
 ; This is an 8051 Assembly File
 ; Using EdSim51DI's Unmodified circuit.
 ; 8051 with 12MHz Clock
-; Delay is not accurate.
-; Date: 2024/4/17-2024/4/24
+; Delay is Inaccurate in Few Machine Cycle.
+; Date: 2024/4/17-2024/5/3
 ; Written By: YHC03
 ;
 ; Switch Usage
@@ -19,6 +19,8 @@ ORG 30H
 MAIN:
 MOV P2, #03H
 MOV R4, #2H
+MOV TMOD, #01H ; Timer Set
+CLR TR0
 
 MAIN_LOOP:
 	ACALL DELAY ; Print&Delay 1 Second
@@ -72,21 +74,31 @@ Final_Minute:
 
 
 ; Delay a second
-; Memory address using for delay loop: 0x18, 0x19
+; Memory address using for delay loop: 0x18
 DELAY:
-	MOV 18H, #108
-	LOOP1: MOV 19H, #200
+	MOV 18H, #16
+	LOOP1:
+		; Originally Delay For 62500 Machine Cycle, but adding machine cycles outside the timer control, 2 was added on Timer's Initial Value.
+		MOV TL0, #0DDH
+		MOV TH0, #0BH
+		CLR TF0
+		SETB TR0
 		LOOP2: ACALL PRINT
 			MOV C, P2.0
 			JC Continue
-			ACALL SETTINGS
+				CLR TR0
+				ACALL SETTINGS
 
-			; After Settings, Reset delay time
-			MOV 18H, #108
-			MOV 19H, #200
+				; After Settings, Reset Timer and Delay time
+				MOV 18H, #16
+				MOV TL0, #0DDH
+				MOV TH0, #0BH
+				CLR TF0
+				SETB TR0
 
 			Continue:
-		DJNZ 19H, LOOP2
+		JNB TF0, LOOP2
+		CLR TR0
 	DJNZ 18H, LOOP1
 RET
 
