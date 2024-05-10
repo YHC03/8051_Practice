@@ -5,7 +5,7 @@
 ; Using EdSim51DI's Unmodified circuit.
 ; 8051 with 12MHz Clock
 ; Delay is Inaccurate in Few Machine Cycle.
-; Date: 2024/4/17-2024/5/3
+; Date: 2024/4/17-2024/5/11
 ; Written By: YHC03
 ;
 ; Switch Usage
@@ -15,12 +15,17 @@
 ORG 0H
 LJMP MAIN
 
+ORG 0BH ; Timer 0 Interrupt
+LJMP INTERRUPT1
+
 ORG 30H
 MAIN:
 MOV P2, #03H
 MOV R4, #2H
+MOV IE, #82H ; Interrupt Set
 MOV TMOD, #01H ; Timer Set
-CLR TR0
+SETB TF0 ; Init the value of Timer 0
+SETB TR0
 
 MAIN_LOOP:
 	ACALL DELAY ; Print&Delay 1 Second
@@ -74,32 +79,24 @@ Final_Minute:
 
 
 ; Delay a second
-; Memory address using for delay loop: 0x18
+; Memory address using for delay loop: R0
 DELAY:
-	MOV 18H, #16
-	LOOP1:
-		; Originally Delay For 62500 Machine Cycle, but adding machine cycles outside the timer control, 2 was added on Timer's Initial Value.
-		MOV TL0, #0DDH
-		MOV TH0, #0BH
-		CLR TF0
-		SETB TR0
-		LOOP2: ACALL PRINT
-			MOV C, P2.0
-			JC Continue
-				CLR TR0
-				ACALL SETTINGS
+	MOV R0, #16
+	LOOP:
+		ACALL PRINT
+		MOV C, P2.0
+		JC Continue
+			CLR TR0
+			ACALL SETTINGS
 
-				; After Settings, Reset Timer and Delay time
-				MOV 18H, #16
-				MOV TL0, #0DDH
-				MOV TH0, #0BH
-				CLR TF0
-				SETB TR0
+			; After Settings, Reset Timer and Delay time
+			MOV R0, #16
+			MOV TL0, #0DDH
+			MOV TH0, #0BH
+			SETB TR0
 
-			Continue:
-		JNB TF0, LOOP2
-		CLR TR0
-	DJNZ 18H, LOOP1
+		Continue:
+	CJNE R0, #0, LOOP
 RET
 
 
@@ -200,7 +197,13 @@ PRINT:
 
 RET
 
-
+ORG 500H
+INTERRUPT1:
+	; Originally Delay For 62500 Machine Cycle, but adding machine cycles outside the timer control, 2 was added on Timer's Initial Value.
+	MOV TL0, #0DDH
+	MOV TH0, #0BH
+	DEC R0
+	RETI
 
 ORG 750H ; Where 7-Segment Data Stores
 DATABASE:
