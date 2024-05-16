@@ -13,7 +13,9 @@
 
 ##### 8051을 이용한 현재 시각 중, 분과 초를 알려주는 시계
 
+해당 Project에서 8051은 12MHz Clock을 이용한다.  
 
+---
 ### 3. 8051_Serial_Command
 
 ##### 8051의 Serial Port로 입력받은 명령어를 수행하는 도구
@@ -52,11 +54,11 @@
     </tr>
     <tr>
         <td>SEGMENT (A-H 사이의 Alphabet) ON</td>
-        <td>주어진 Alphabet의 Segment를 켠다. H 입력 시, Segment의 점을 켠다.</td>
+        <td>주어진 Alphabet의 Segment를 켠다. H 입력 시, Segment의 점 LED를 켠다.</td>
     </tr>
     <tr>
         <td>SEGMENT (A-H 사이의 Alphabet) OFF</td>
-        <td>주어진 Alphabet의 Segment를 끈다. H 입력 시, Segment의 점을 끈다.</td>
+        <td>주어진 Alphabet의 Segment를 끈다. H 입력 시, Segment의 점 LED를 끈다.</td>
     </tr>
     <tr>
         <td>MOTOR FORWARD</td>
@@ -84,4 +86,4 @@ Serial Port의 Baud Rate는 4800 baud rate이며, 8051의 Clock는 11.0592MHz이
 
 ---
 작성자 : YHC03  
-최종 작성일 : 2024/5/16  
+최종 작성일 : 2024/5/17  

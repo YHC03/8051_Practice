@@ -23,8 +23,8 @@
  * 
  * # for number, @ for Alphabet
  * 
- * LED, Segment, Segment Enable, Segment change swiches are based on EdSim51DI's unmidified circuit.
- * Motor Forward is connacted at P3.6 port, Motor Reverse is connacted at P3.7 port.
+ * LED, Segment, Segment Enable, Segment change swiches are based on EdSim51DI's unmodified circuit.
+ * Motor Forward is connected at P3.6 port, Motor Reverse is connected at P3.7 port.
  * 
  * This project uses Serial Input 0 at P3.1 port, and the baud rate is 4800 baud rate. The clock which the 8051 using is 11.0592MHz.
  * 
@@ -163,6 +163,14 @@ void main()
 
     // segData: Constant that stores which data to print at segment
     const unsigned char segData[10] = { 0xC0, 0xF9, 0xA4, 0xB0, 0x99, 0x92, 0x82, 0xD8, 0x80, 0x90 };
+
+    // Reset the Segment Switch
+    segment_SW0 = 0;
+    segment_SW1 = 0;
+    
+    // Reset the Motor
+    motor_FORWARD = 0;
+    motor_REVERSE = 0;
 
     TMOD = 0x20; // Set Timer 1 Mode 2
     TH1 = -6; // 4800 baud rate
