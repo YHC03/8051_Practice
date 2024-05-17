@@ -20,8 +20,6 @@
 
 ##### 8051의 Serial Port로 입력받은 명령어를 수행하는 도구
 
-이 Project는 마이크로프로세서 및 HDL 과목의 2024년 이전 수업의 과제이다.  
-
 이 프로그램에서는 다음과 같은 명령어를 Serial로 입력받아 수행할 수 있다.  
 <table>
     <tr>
@@ -98,12 +96,30 @@
     </tr>
 </table>
 
-Serial Port의 Baud Rate는 4800 baud rate이며 Serial 통신에서 Parity Bit를 이용하지 않는다. 또한, 8051의 Clock는 11.0592MHz이다.  
 
 ---
-1, 2번 프로젝트는 EdSim51DI의 회로도를 기준으로 작성되었습니다.  
-3번 프로젝트는 EdSim51DI의 회로도를 기준으로 작성되었으나, Motor Forward는 P3.6, Motor Reverse는 P3.7 Port를 이용합니다.  
+### 4. 8051_Doorlock
+
+##### 8051을 이용한 Doorlock
+
+입력은 Keypad를 이용해 받는다.  
+- Unlock Mode 이용 시, *를 누른 후, 숫자들을 누르고, 다시 *를 누른다. 초기 비밀번호는 0000이다.
+    - 정확한 Password가 입력된 경우, 모든 LED를 점등한다.
+    - 틀린 Password가 입력된 경우, Segment에 E가 출력되며 Segment의 점은 점등되지 않는다. 이후, 틀린 Password가 Serial로 전송된다.
+- Password Change Mode 이용 시, *를 4번 누른 후, 숫자들을 누르고, 다시 *를 4번 누른다.
+    - Password 변경 성공 시, Segment의 가장 아래의 LED 2개를 점등한다.
+- #를 누르면 언제나 초기 입력 상태로 돌아간다.
+- 잘못된 명령어 입력 시, Segment에 E가 출력되며 Segment의 점 또한 점등된다.
+- 입력값이 *인 경우, 모든 LED를 소등한다.
+- 입력값이 숫자인 경우, LED가 LED0(P1.0에 있음)에서 LED7(P1.7에 있음) 순서로 점등하며, 동시에 다른 LED는 소등한다.
+
+
+---
+1, 2, 4번 프로젝트는 EdSim51DI의 회로도를 기준으로 작성되었습니다.  
+3번 프로젝트는 EdSim51DI의 회로도를 기준으로 작성되었으나, Motor Forward는 P3.6, Motor Reverse는 P3.7 Port를 이용합니다. 
+3, 4번 프로젝트에서 Serial Port의 Baud Rate는 4800 baud rate이며 Serial 통신에서 Parity Bit를 이용하지 않습니다. 또한, 해당 프로젝트에서 8051의 Clock는 11.0592MHz이다.  
+3, 4번 프로젝트는 마이크로프로세서 및 HDL 과목의 2024년 이전 수업의 과제입니다.  
 
 ---
 작성자 : YHC03  
-최종 작성일 : 2024/5/17  
+최종 작성일 : 2024/5/18  
