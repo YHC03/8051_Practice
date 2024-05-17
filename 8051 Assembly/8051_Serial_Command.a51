@@ -15,6 +15,7 @@
 ;
 ; # for number
 ;
+;
 ; LED, Segment, Segment Enable swiches are based on EdSim51DI's unmodified circuit.
 ; Motor Forward is connected at P3.6 port, Motor Reverse is connected at P3.7 port.
 ;
@@ -26,6 +27,8 @@
 ; R7(0x07), B(0xF0): Temporary saves the value of R1, or @R1
 ; 0x08, 0x09: Return address (Written By Stack Pointer)
 ; 0x30-0x7F: The Input Value (with \r at the end of the value)
+;
+; This project uses Serial Input 0 at P3.1 port, and the baud rate is 4800 baud rate without a Parity Bit. The clock which the 8051 using is 11.0592MHz.
 ;
 ; Written By: YHC03
 

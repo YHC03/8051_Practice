@@ -37,6 +37,14 @@
         <td>주어진 LED를 끈다.</td>
     </tr>
     <tr>
+        <td>LED BLINK (0-255 사이의 숫자)</td>
+        <td>LED를 입력받은 Machine Cycle 주기로 깜빡인다.</td>
+    </tr>
+    <tr>
+        <td>LED BLINK STOP</td>
+        <td>LED 깜빡임을 멈춘다.</td>
+    </tr>
+    <tr>
         <td>SEGMENT ENABLE</td>
         <td>Segment를 켠다.</td>
     </tr>
@@ -76,9 +84,21 @@
         <td>MOTOR STOP</td>
         <td>Motor를 정지시킨다.</td>
     </tr>
+    <tr>
+        <td>KEYPAD SEGMENT</td>
+        <td>Keypad에 입력된 값을 Segment에 출력한다.</td>
+    </tr>
+    <tr>
+        <td>KEYPAD LED</td>
+        <td>Keypad에 입력된 0-7 사이의 값의 번호의 LED를 점등한다.</td>
+    </tr>
+    <tr>
+        <td>KEYPAD UART</td>
+        <td>Keypad에 입력된 값을 Serial 통신으로 전송한다.</td>
+    </tr>
 </table>
 
-Serial Port의 Baud Rate는 4800 baud rate이며, 8051의 Clock는 11.0592MHz이다.  
+Serial Port의 Baud Rate는 4800 baud rate이며 Serial 통신에서 Parity Bit를 이용하지 않는다. 또한, 8051의 Clock는 11.0592MHz이다.  
 
 ---
 1, 2번 프로젝트는 EdSim51DI의 회로도를 기준으로 작성되었습니다.  

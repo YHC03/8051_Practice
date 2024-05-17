@@ -67,7 +67,7 @@
     </tr>
 </table>
 
-Serial Port의 Baud Rate는 4800 baud rate이며, 8051의 Clock는 11.0592MHz이다.  
+Serial Port의 Baud Rate는 4800 baud rate이며 Serial 통신에서 Parity Bit를 이용하지 않는다. 또한, 8051의 Clock는 11.0592MHz이다.  
 
 ---
 2, 3번 프로젝트는 EdSim51DI의 회로도를 기준으로 작성되었습니다.  
