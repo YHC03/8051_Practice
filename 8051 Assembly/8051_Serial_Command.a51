@@ -8,7 +8,7 @@
 ; LED # OFF : Turn off that LED(0-7)
 ; SEGMENT ON : Turn on the Segment Display
 ; SEGMENT OFF : Turn of the Segment Display
-; SEGMENT # : Print that numbet(0-9) on the Segment Display
+; SEGMENT # : Print that number(0-9) on the Segment Display
 ; MOTOR FORWARD : Run the Motor Forward
 ; MOTOR REVERSE : Run the Motor Reverse
 ; MOTOR STOP : Stop the Motor

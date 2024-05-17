@@ -10,9 +10,11 @@
  * Inputs: P2.0, P2.1
  * Outputs: P0.7(Segment Enable), P1(Segment Output), P3.3 & P3.4(Segment Select)
  *
+ * 8051 with 12MHz Clock
+ *
  * Written By: YHC03
  * Create Date: 2024/5/14
- * Last Modified Date: 2024/5/14
+ * Last Modified Date: 2024/5/17
 */
 
 
