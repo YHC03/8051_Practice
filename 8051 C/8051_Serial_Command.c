@@ -23,7 +23,8 @@
  * MOTOR BACKWARD : Run the Motor Backward
  * MOTOR STOP : Stop the Motor
  * KEYPAD SEGMENT : Scan the Keypad, and print the result on the segment
- * KEYPAD LED : Scan the Keypad, and print the LED of the specific number pressed at the Keypad
+ * KEYPAD LED ON : Scan the Keypad, and turn on the LED of the specific number pressed at the Keypad
+ * KEYPAD LED OFF : Scan the Keypad, and turn off the LED of the specific number pressed at the Keypad
  * KEYPAD UART : Scan the Keypad, and print the result at the UART.
  * 
  * # for number, @ for Alphabet
@@ -232,13 +233,13 @@ void Blink_LED() interrupt 1
 }
 
 
-/* get_Input_Num() Function
+/* getInputNum() Function
  *
  * Function: Get the number from the string of the last
  * Input variable: The string to find the number
  * Output variable: The number the string indicates
 */
-unsigned char get_Input_Num(unsigned char* input)
+unsigned char getInputNum(unsigned char* input)
 {
     // Variables) result: The result, pointer: the pointer of the string
     unsigned char result = 0, pointer = 0;
@@ -269,11 +270,11 @@ void main()
     // Variables) *(first, second, third)command: First, Second, Third Command seperated by blank
     unsigned char *firstCommand, *secondCommand, *thirdCommand;
 
-    // Variable) targNum: Pin number to print, Key_Input: get the key Input
+    // Variables) targNum: Pin number to print, Key_Input: get the key Input
     unsigned char targNum, Key_Input;
 
-    // segData: Constant that stores which data to print at segment (*: A, #: B, Nothing Input: No Output)
-    const unsigned char segData[13] = { 0xC0, 0xF9, 0xA4, 0xB0, 0x99, 0x92, 0x82, 0xD8, 0x80, 0x90, 0x88, 0x83, 0xFF };
+    // SEGMENT_DATA: Constant that stores which data to print at segment (*: A, #: B, Nothing Input: No Output)
+    const unsigned char SEGMENT_DATA[13] = { 0xC0, 0xF9, 0xA4, 0xB0, 0x99, 0x92, 0x82, 0xD8, 0x80, 0x90, 0x88, 0x83, 0xFF };
 
     // Reset the Segment Switch
     segment_SW0 = 0;
@@ -373,7 +374,7 @@ void main()
                     TR0 = 0;
                 }else{
                     // Change Ascii value to number
-                    targNum = get_Input_Num(thirdCommand);
+                    targNum = getInputNum(thirdCommand);
 
                     // Set the data to timer 0
                     TH0 = 0xFF - targNum;
@@ -395,7 +396,7 @@ void main()
                 {
                     // Turn on the LED selected by the second command
                     setLED(targNum, 1);
-                }else if(!strcmp(secondCommand, "OFF")){ // If the third command is OFF
+                }else if(!strcmp(thirdCommand, "OFF")){ // If the third command is OFF
                     // Turn on the LED selected by the second command
                     setLED(targNum, 0);
                 } // If the third command is neither ON nor OFF, the command is an Error
@@ -437,7 +438,7 @@ void main()
                 if(targNum >= 0 && targNum <= 9 && strlen(thirdCommand) == 1)
                 {
                     // Print the value on segment
-                    LED_and_Segment_All = segData[targNum];
+                    LED_and_Segment_All = SEGMENT_DATA[targNum];
                 }
 
             }else if(*secondCommand >= 'A' && *secondCommand <= 'H' && strlen(secondCommand) == 1){ // If the second command is an Alphabet
@@ -490,11 +491,22 @@ void main()
             if(!strcmp(secondCommand, "SEGMENT"))
             {
                 // Set the segment by the value of the keypad
-                LED_and_Segment_All = segData[getEnabledKey()];
+                LED_and_Segment_All = SEGMENT_DATA[getEnabledKey()];
 
             }else if(!strcmp(secondCommand, "LED")){ // If the second command is LED
-                // set the LED by the value of the keypad
-                setLED(getEnabledKey(), 1);
+            	// Get the third command
+		thirdCommand = strtok(NULL, " ");
+				
+		// Switch by the third command
+                if(!strcmp(thirdCommand, "ON")) // If the third command is 1
+                {
+                    // Turn on the LED by the value of the keypad
+                    setLED(getEnabledKey(), 1);
+
+                }else if(!strcmp(thirdCommand, "OFF")){ // If the third command is 0
+                    // Turn off the LED by the value of the keypad
+                    setLED(getEnabledKey(), 0);
+                }
 
             }else if(!strcmp(secondCommand, "UART")){ // If the second command is UART
                 // Get the value of the keypad

@@ -87,8 +87,12 @@
         <td>Keypad에 입력된 값을 Segment에 출력한다.</td>
     </tr>
     <tr>
-        <td>KEYPAD LED</td>
+        <td>KEYPAD LED ON</td>
         <td>Keypad에 입력된 0-7 사이의 값의 번호의 LED를 점등한다.</td>
+    </tr>
+    <tr>
+        <td>KEYPAD LED OFF</td>
+        <td>Keypad에 입력된 0-7 사이의 값의 번호의 LED를 소등한다.</td>
     </tr>
     <tr>
         <td>KEYPAD UART</td>
