@@ -57,77 +57,77 @@ sfr LED = 0x90/*P2*/;
 unsigned char getKeypadValue()
 {
 	// Variables) output: the value to output
-		unsigned char output = '#'; // Initialize with #(for reset the input mode) for the case with no input(Simultaneously clear the keypad)
+	unsigned char output = '#'; // Initialize with #(for reset the input mode) for the case with no input(Simultaneously clear the keypad)
 		
-		// Set the P0 at Port Reading Mode
-		PORT_0 = 0x7F;
+	// Set the P0 at Port Reading Mode
+	PORT_0 = 0x7F;
 		
-		// Find 1 to 3
-		OUT_123 = 0;
-		if(!IN_1)
-		{
-				output = '1';
-				goto KEYPAD_FINAL_PROCESS;
-		}else if(!IN_2){
-				output = '2';
-				goto KEYPAD_FINAL_PROCESS;
-		}else if(!IN_3){
-				output = '3';
-				goto KEYPAD_FINAL_PROCESS;
-		}
+	// Find 1 to 3
+	OUT_123 = 0;
+	if(!IN_1)
+	{
+		output = '1';
+		goto KEYPAD_FINAL_PROCESS;
+	}else if(!IN_2){
+		output = '2';
+		goto KEYPAD_FINAL_PROCESS;
+	}else if(!IN_3){
+		output = '3';
+		goto KEYPAD_FINAL_PROCESS;
+	}
 		
-		// Find 4 to 6
-		OUT_123 = 1;
-		OUT_456 = 0;
-		if(!IN_1)
-		{
-				output = '4';
-				goto KEYPAD_FINAL_PROCESS;
-		}else if(!IN_2){
-				output = '5';
-				goto KEYPAD_FINAL_PROCESS;
-		}else if(!IN_3){
-				output = '6';
-				goto KEYPAD_FINAL_PROCESS;
-		}
+	// Find 4 to 6
+	OUT_123 = 1;
+	OUT_456 = 0;
+	if(!IN_1)
+	{
+		output = '4';
+		goto KEYPAD_FINAL_PROCESS;
+	}else if(!IN_2){
+		output = '5';
+		goto KEYPAD_FINAL_PROCESS;
+	}else if(!IN_3){
+		output = '6';
+		goto KEYPAD_FINAL_PROCESS;
+	}
 		
-		// Find 7 to 9
-		OUT_456 = 1;
-		OUT_789 = 0;
-		if(!IN_1)
-		{
-				output = '7';
-				goto KEYPAD_FINAL_PROCESS;
-		}else if(!IN_2){
-				output = '8';
-				goto KEYPAD_FINAL_PROCESS;
-		}else if(!IN_3){
-				output = '9';
-				goto KEYPAD_FINAL_PROCESS;
-		}
+	// Find 7 to 9
+	OUT_456 = 1;
+	OUT_789 = 0;
+	if(!IN_1)
+	{
+		output = '7';
+		goto KEYPAD_FINAL_PROCESS;
+	}else if(!IN_2){
+		output = '8';
+		goto KEYPAD_FINAL_PROCESS;
+	}else if(!IN_3){
+		output = '9';
+		goto KEYPAD_FINAL_PROCESS;
+	}
 		
-		// Find *, 0, and #
-		OUT_789 = 1;
-		OUT_REM = 0;
-		if(!IN_1)
-		{
-				output = '*';
-				goto KEYPAD_FINAL_PROCESS;
-		}else if(!IN_2){
-				output = '0';
-				goto KEYPAD_FINAL_PROCESS;
-		}else if(!IN_3){
-				output = '#';
-				goto KEYPAD_FINAL_PROCESS;
-		}
+	// Find *, 0, and #
+	OUT_789 = 1;
+	OUT_REM = 0;
+	if(!IN_1)
+	{
+		output = '*';
+		goto KEYPAD_FINAL_PROCESS;
+	}else if(!IN_2){
+		output = '0';
+		goto KEYPAD_FINAL_PROCESS;
+	}else if(!IN_3){
+		output = '#';
+		goto KEYPAD_FINAL_PROCESS;
+	}
 		
-		// After finding the key Deteced
+	// After finding the key Deteced
 KEYPAD_FINAL_PROCESS:
-		PORT_0 = 0x70; // Reset P0 for get input value
-		while(!INT1); // Wait until the Keypad Input Undetected
+	PORT_0 = 0x70; // Reset P0 for get input value
+	while(!INT1); // Wait until the Keypad Input Undetected
 		
-		// Return the output value
-		return output;
+	// Return the output value
+	return output;
 }
 
 
@@ -139,160 +139,163 @@ KEYPAD_FINAL_PROCESS:
 */
 void clearChar(unsigned char *value)
 {
-		// Variables) i: variable for Loop
-		unsigned char i = 0;
+	// Variables) i: variable for Loop
+	unsigned char i = 0;
 	
-		// Change the values of all array with \0
-		for(i = 0; i < BUFFER_LENGTH; i++)
-		{
-				value[i] = '\0';
-		}
+	// Change the values of all array with \0
+	for(i = 0; i < BUFFER_LENGTH; i++)
+	{
+		value[i] = '\0';
+	}
 		
-		return;
+	return;
 }
 
 
 void main()
 {
-		// Variables) i: variable for Loop
-		unsigned char i = 0;
-		// Variables) value: input Buffer, curr: cursor for value[16] variable, commandNum: Number of * at value[16] variable, inputNum: Number of input Numbers at value[16] variable
-		unsigned char value[BUFFER_LENGTH], curr = 0, commandNum = 0, inputNum = 0;
-		// Variables) password: the password
-		unsigned char password[9] = "0000"; // Reset the password with 0000
+	// Variables) i: variable for Loop
+	unsigned char i = 0;
+	// Variables) value: input Buffer, curr: cursor for value[16] variable, commandNum: Number of * at value[16] variable, inputNum: Number of input Numbers at value[16] variable
+	unsigned char value[BUFFER_LENGTH], curr = 0, commandNum = 0, inputNum = 0;
+	// Variables) password: the password
+	unsigned char password[9] = "0000"; // Reset the password with 0000
 		
-		PORT_0 = 0x70; // Reset P0 for get input value
-		INTR1 = 1; // Set P3.3 at input mode
-		SEGMENT_ENABLE = 0; // Disable the segment
-		
-		TMOD = 0x20; // Set Timer 1 Mode 2
-		SCON = 0x40; // Set Serial Mode 1 without Serial Read
-		TH1 = -6; // Set Timer 1 Setting at 4800 baud rate
-		TL1 = -6; // Initialize the Timer 1
-		TR1 = 1; // Turn on the Timer 1
-		TI = 0; // Clear the Serial Write Flag
+	PORT_0 = 0x70; // Reset P0 for get input value
+	INTR1 = 1; // Set P3.3 at input mode
+	SEGMENT_ENABLE = 0; // Disable the segment
 	
-		// Clear the input buffer
+	TMOD = 0x20; // Set Timer 1 Mode 2
+	SCON = 0x40; // Set Serial Mode 1 without Serial Read
+	TH1 = -6; // Set Timer 1 Setting at 4800 baud rate
+	TL1 = -6; // Initialize the Timer 1
+	TR1 = 1; // Turn on the Timer 1
+	TI = 0; // Clear the Serial Write Flag
+	
+	// Clear the input buffer
+	clearChar(value);
+	
+	// Loop Forever
+	while(1)
+	{
+		// Initialize curr, commandNum, inputNum, and the Input Buffer 
+		curr = 0;
+		commandNum = 0;
+		inputNum = 0;
 		clearChar(value);
-	
-		// Loop Forever
+			
+		// Loop Until the Keypad Input Finishes
 		while(1)
 		{
-				// Initialize curr, commandNum, inputNum, and the Input Buffer 
-				curr = 0;
-				commandNum = 0;
-				inputNum = 0;
-				clearChar(value);
+			// Wait until the Keypad Input Detected
+			while(INTR1);
 			
-				// Loop Until the Keypad Input Finishes
-				while(1)
+			// Get the Keypad Input Value
+			value[curr++]=getKeypadValue();
+					
+			// Disable the segment
+			SEGMENT_ENABLE = 0;
+					
+			// If the value is #, reset the input mode
+			if(value[curr - 1] == '#')
+			{ 
+				commandNum = 254;
+				break;
+							
+			// If the value is *, reset the LED indicating the Input Status
+			}else if(value[curr - 1] == '*'){
+				LED = 0xFF;
+							
+				// Increase the number of the *
+				commandNum++;
+							
+			// If the value is a number
+			}else{
+				// If there is no * before the number, the command is invalid
+				if(!commandNum){ break;}
+							
+				// Increase the number of the #
+				inputNum++;
+								
+				// Turn on, or Move Left the LED that indicates the Input Status
+				if(LED == 0xFF || LED == 0x86 || LED == 0x00 || LED == 0x77 || LED == 0x06)
 				{
-						// Wait until the Keypad Input Detected
-						while(INTR1);
-					
-						// Get the Keypad Input Value
-						value[curr++]=getKeypadValue();
-						
-						// Disable the segment
-						SEGMENT_ENABLE = 0;
-					
-						// If the value is #, reset the input mode
-						if(value[curr - 1] == '#')
-						{ 
-								commandNum = 254;
-								break;
-							
-						// If the value is *, reset the LED indicating the Input Status
-						}else if(value[curr - 1] == '*'){
-								LED = 0xFF;
-							
-								// Increase the number of the *
-								commandNum++;
-							
-						// If the value is a number
-						}else{
-								// If there is no * before the number, the command is invalid
-								if(!commandNum){ break;}
-								
-								// Increase the number of the #
-								inputNum++;
-								
-								// Turn on, or Move Left the LED that indicates the Input Status
-								if(LED == 0xFF || LED == 0x86 || LED == 0x00 || LED == 0x77 || LED == 0x06)
-								{
-										// Turn on the first LED
-										LED = 0xFE;
+					// Turn on the first LED
+					LED = 0xFE;
 									
-								}else{
-										// Turn on the next LED, while turning off the ohter LEDs.
-										LED = (LED << 1) + 1;
-								}
-						}
-						
-						// If the setting mode was found, exit the input loop
-						if(commandNum == 8) { break; }
-						
-						// If the unlock mode was found, exit the input loop
-						if(commandNum == 2 && inputNum) { break; }
-						
-						// If a invalid command (3 commandNum with a number input) was found, exit the input loop as invalid command
-						if(commandNum == 3 && inputNum) { commandNum = 0; break; }
-						
-						// If a invalid command (5 or more commandNum without a number input) was found, exit the input loop as invalid command
-						if(commandNum >= 5 && !inputNum) { commandNum = 0; break; }
-						
-						// If the inputNum exceed 8, exit the input loop as invalid command
-						if(inputNum >= 9) { commandNum = 0; break; }
-					
-				}
-				
-				
-				// If the unlock mode was found
-				if(commandNum == 2 && inputNum >= 4)
-				{
-						// If the inputValue matches the password value
-						if(!strncmp(password, value + 1, inputNum) && (inputNum == strlen(password)))
-						{
-								// Open the Gate by Turning on the whole LED
-								LED = 0x00;
-						
-						}else{
-								// Print 'E' without a dot on the segment, indicating the wrong input was found
-								SEGMENT_ENABLE = 1; // Enable the segment
-								LED = 0x86;
-							
-								// Send the wrong inputValue to Serial
-								for(i = 0; i < inputNum; i++)
-								{
-										SBUF = *(value + i + 1); // Send the wrong input data
-										while(!TI); // Wait until the Serial Send Finish
-										TI = 0; // Clear the Serial Write Flag
-								}
-								
-								SBUF = ','; // Send ',' to distinguish the value with the other wrong inputValue
-								while(!TI); // Wait until the Serial Send Finish
-								TI = 0; // Clear the Serial Write Flag
-						}
-						
-				// If the setting mode was found
-				}else if(commandNum == 8 && inputNum >= 4){
-						strncpy(password, value + 4, inputNum); // Set the password with the inputValue
-						password[inputNum] = '\0'; // put '\0' to indicate the end of the password
-						
-						LED = 0x77; // Set LED to indicate Password Setting is now Finished
-					
-				// If reseting the input
-				}else if(commandNum == 254){
-						// Cancel
-						LED = 0xFF; // Clear LED
-					
-				// If the input is invalid
 				}else{
-						// Wrong Command
-						SEGMENT_ENABLE = 1; // Enable the segment
-						LED = 0x06; // Print 'E' with a dot on the segment, indicating the input is invalid
+					// Turn on the next LED, while turning off the ohter LEDs.
+					LED = (LED << 1) + 1;
 				}
+			}
+						
+			// If the setting mode was found, exit the input loop
+			if(commandNum == 8) { break; }
+						
+			// If the unlock mode was found, exit the input loop
+			if(commandNum == 2 && inputNum) { break; }
+						
+			// If a invalid command (3 commandNum with a number input) was found, exit the input loop as invalid command
+			if(commandNum == 3 && inputNum) { commandNum = 0; break; }
+						
+			// If a invalid command (5 or more commandNum without a number input) was found, exit the input loop as invalid command
+			if(commandNum >= 5 && !inputNum) { commandNum = 0; break; }
+						
+			// If the inputNum exceed 8, exit the input loop as invalid command
+			if(inputNum >= 9) { commandNum = 0; break; }
+					
 		}
+				
+				
+		// If the unlock mode was found
+		if(commandNum == 2 && inputNum >= 4)
+		{
+			// If the inputValue matches the password value
+			if(!strncmp(password, value + 1, inputNum) && (inputNum == strlen(password)))
+			{
+				// Open the Gate by Turning on the whole LED
+				LED = 0x00;
+						
+			}else{
+				// Print 'E' without a dot on the segment, indicating the wrong input was found
+				SEGMENT_ENABLE = 1; // Enable the segment
+				LED = 0x86;
+							
+				// Send the wrong inputValue to Serial
+				for(i = 0; i < inputNum; i++)
+				{
+					SBUF = *(value + i + 1); // Send the wrong input data
+					while(!TI); // Wait until the Serial Send Finish
+					TI = 0; // Clear the Serial Write Flag
+				}
+								
+				SBUF = ','; // Send ',' to distinguish the value with the other wrong inputValue
+				while(!TI); // Wait until the Serial Send Finish
+				TI = 0; // Clear the Serial Write Flag
+			}
+						
+		// If the setting mode was found
+		}else if(commandNum == 8 && inputNum >= 4){
+			strncpy(password, value + 4, inputNum); // Set the password with the inputValue
+			password[inputNum] = '\0'; // put '\0' to indicate the end of the password
+				
+			// Enable the segment
+			SEGMENT_ENABLE = 0;
+
+			LED = 0x77; // Set LED to indicate Password Setting is now Finished
+					
+		// If reseting the input
+		}else if(commandNum == 254){
+			// Cancel
+			LED = 0xFF; // Clear LED
+					
+		// If the input is invalid
+		}else{
+			// Wrong Command
+			SEGMENT_ENABLE = 1; // Enable the segment
+			LED = 0x06; // Print 'E' with a dot on the segment, indicating the input is invalid
+		}
+	}
 		
-		return;
+	return;
 }
