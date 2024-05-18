@@ -261,22 +261,26 @@ void main()
 				SEGMENT_ENABLE = 1; // Enable the segment
 				LED = 0x86;
 							
-				// Send the wrong inputValue to Serial
+				// Send the wrong input value to Serial
 				for(i = 0; i < inputNum; i++)
 				{
 					SBUF = *(value + i + 1); // Send the wrong input data
-					while(!TI); // Wait until the Serial Send Finish
-					TI = 0; // Clear the Serial Write Flag
+					while(!TI); // Wait until the serial send finishes
+					TI = 0; // Clear the serial write flag
 				}
-								
-				SBUF = ','; // Send ',' to distinguish the value with the other wrong inputValue
-				while(!TI); // Wait until the Serial Send Finish
-				TI = 0; // Clear the Serial Write Flag
+				
+				// Send ", " to distinguish the value with the other wrong input value			
+				SBUF = ','; // Send ','
+				while(!TI); // Wait until the serial send finishes
+				TI = 0; // Clear the serial write flag
+				SBUF = ' '; // Send ' '
+				while(!TI); // Wait until the serial send finishes
+				TI = 0; // Clear the serial write flag
 			}
 						
 		// If the setting mode was found
 		}else if(commandNum == 8 && inputNum >= 4){
-			strncpy(password, value + 4, inputNum); // Set the password with the inputValue
+			strncpy(password, value + 4, inputNum); // Set the password with the input value
 			password[inputNum] = '\0'; // put '\0' to indicate the end of the password
 				
 			// Enable the segment

@@ -40,7 +40,7 @@ INIT:
     MOV 71H, #0
     MOV 72H, #0
     MOV 73H, #0
-    MOV 74H, #0DH
+    MOV 74H, #0DH ; Put \r to indicate the end of the password
 
     ; Reset the Motor
     CLR P3.0
