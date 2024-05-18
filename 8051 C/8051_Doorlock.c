@@ -1,5 +1,5 @@
 #include<reg51.h>
-#include<string.h>
+#include<string.h> // To use strlen(), strncmp(), strncat() functions
 
 
 /*
