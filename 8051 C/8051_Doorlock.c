@@ -5,6 +5,8 @@
 /*
  * 8051_Doorlock
  *
+ * This is an 8051 C file
+ *
  * Function: Perform a function of a doorlock device with 8051
  *
  * To use the unlock mode, press '*', press the numbers, and press '*' again. The initial password is 0000.

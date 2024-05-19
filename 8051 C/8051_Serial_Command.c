@@ -4,6 +4,8 @@
 
 /* 8051_Serial_Command
  * 
+ * This is an 8051 C file
+ *
  * Brief Function : Run commands, by Serial Input
  * 
  * Serial Functions

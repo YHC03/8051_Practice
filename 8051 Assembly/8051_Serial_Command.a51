@@ -388,7 +388,7 @@ LOOP_STOP:
 MOTOR_FAILURE: RET
 
 
-ORG 700H ; Where Constants stores
+ORG 700H ; Where Constants stored
 WORD_LED: DB "LED " ; Word 'LED' with a blank on the right side of the word
 WORD_SEGMENT: DB "SEGMENT " ; Word 'SEGMENT' with a blank on the right side of the word
 WORD_MOTOR: DB "MOTOR " ; Word 'MOTOR' with a blank on the right side of the word
