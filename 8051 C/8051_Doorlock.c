@@ -133,35 +133,12 @@ KEYPAD_FINAL_PROCESS:
 }
 
 
-/* clearChar() Function
- *
- * Function: Clear the input array with \0
- * Input variable: *value(array to clear)
- * No output variable
-*/
-void clearChar(unsigned char *value)
-{
-	// Variables) i: variable for Loop
-	unsigned char i = 0;
-	
-	// Change the values of all array with \0
-	for(i = 0; i < BUFFER_LENGTH; i++)
-	{
-		value[i] = '\0';
-	}
-		
-	return;
-}
-
-
 void main()
 {
-	// Variables) i: variable for Loop
-	unsigned char i = 0;
 	// Variables) value: input Buffer, curr: cursor for value[16] variable, commandNum: Number of * at value[16] variable, inputNum: Number of input Numbers at value[16] variable
 	unsigned char value[BUFFER_LENGTH], curr = 0, commandNum = 0, inputNum = 0;
-	// Variables) password: the password
-	unsigned char password[9] = "0000"; // Reset the password with 0000
+	// Variables) i: variable for Loop, password: the password
+	unsigned char i = 0, password[9] = "0000"; // Reset the password with 0000
 		
 	PORT_0 = 0x70; // Reset P0 for get input value
 	INTR1 = 1; // Set P3.3 at input mode
@@ -175,7 +152,7 @@ void main()
 	TI = 0; // Clear the Serial Write Flag
 	
 	// Clear the input buffer
-	clearChar(value);
+	memset(value, '\0', sizeof(value));
 	
 	// Loop Forever
 	while(1)
@@ -184,7 +161,7 @@ void main()
 		curr = 0;
 		commandNum = 0;
 		inputNum = 0;
-		clearChar(value);
+		memset(value, '\0', sizeof(value));
 			
 		// Loop Until the Keypad Input Finishes
 		while(1)
