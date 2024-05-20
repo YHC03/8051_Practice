@@ -266,8 +266,8 @@ unsigned char getInputNum(unsigned char* input)
 
 void main()
 {
-    // Variables) command: Serial Input Value(string), i: variable for repeat, cur: input cursor for command[30]
-    unsigned char command[MAX_SERIAL_LENGTH], i, cur;
+    // Variables) command: Serial Input Value(string), cur: input cursor for command[30]
+    unsigned char command[MAX_SERIAL_LENGTH], cur;
 
     // Variables) *(first, second, third)command: First, Second, Third Command seperated by blank
     unsigned char *firstCommand, *secondCommand, *thirdCommand;
@@ -294,8 +294,7 @@ void main()
     IE = 0x82; // Interrupt 1 Enable
 
     // Initialize the value of variable command
-    for(i = 0; i < MAX_SERIAL_LENGTH; i++)
-        command[i]='\0';
+    memset(command, '\0', sizeof(command));
     
     // Loop Forever
     while(1)
@@ -325,6 +324,16 @@ void main()
             if(command[cur-1] == '\r')
             {
                 // Mark end on the last value, instead of \r
+                command[cur-1] = '\0';
+
+                // Exit the loop for input
+                break;
+            }
+
+	    // If the command input meets line feed (\n)
+            if(command[cur-1] == '\n')
+            {
+                // Mark end on the last value, instead of \n
                 command[cur-1] = '\0';
 
                 // Exit the loop for input
