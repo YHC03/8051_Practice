@@ -71,6 +71,10 @@ sbit KEYPAD_X3 = 0x81/*P0.1 port*/; //Keypad X3
 sbit KEYPAD_X4 = 0x80/*P0.0 port*/; //Keypad X4
 
 
+// Global variable) command: Serial Input Value(string)
+unsigned char command[MAX_SERIAL_LENGTH];
+
+
 /* segmentNumChange() Function
  *
  * Function: Change the Number of the segment to enable
@@ -253,7 +257,7 @@ unsigned char getInputNum(unsigned char* input)
         result *= 10;
 
         // Add number at the current pointer of the string
-        result += *(input+pointer) ^ 0x30;
+        result += *(input + pointer) ^ 0x30;
 
         // Increse the string pointer
         pointer++;
@@ -264,11 +268,98 @@ unsigned char getInputNum(unsigned char* input)
 }
 
 
+/* serialCommand() Function
+ *
+ * Function: Process the Serial Functions
+ * No input and output variable
+*/
+void serialCommand() interrupt 4
+{
+	// Variable) cur: input cursor for command[MAX_SERIAL_LENGTH]
+	unsigned char cur = 0;
+	
+	// If TI flag was enabled, just clear the TI flag
+	if(TI)
+	{
+		TI = 0;
+	}
+	
+	// If RI flag was enabled, process the input
+	if(RI)
+	{
+        // Loop Until the input finishes
+        while(1)
+        {
+            // Wait Until the input finish
+            while(!RI);
+
+            // Reset Serial Input Bit
+            RI = 0;
+
+            // Get value of SBUF, and increase cursor
+            command[cur++] = SBUF;
+
+            // If the input letter is small letter, change with capital letter
+            if(command[cur - 1] >= 'a' && command[cur - 1] <= 'z')
+            {
+                command[cur - 1] -= 'a' - 'A';
+            }
+
+            // If the command input finish
+            if(command[cur - 1] == '\r')
+            {
+                // Mark end on the last value, instead of \r
+                command[cur - 1] = '\0';
+
+                // Exit the loop for input
+                break;
+            }
+
+	    // If the command input meets line feed (\n)
+            if(command[cur - 1] == '\n')
+            {
+                // Mark end on the last value, instead of \n
+                command[cur - 1] = '\0';
+
+                // Exit the loop for input
+                break;
+            }
+
+            // If the command input exceeds the variable's size
+            if(cur >= MAX_SERIAL_LENGTH)
+            {
+                // Clear Serial Buffer
+                
+                do{
+                    // Wait Until the input finish
+                    while(!RI);
+
+                    // Reset Serial Input Bit
+                    RI = 0;
+
+                    // Get serial value at the last value of variable command
+                    command[cur - 1] = SBUF;
+
+                }while(command[cur - 1] != '\r'); // Loop until the last value was processed
+
+                // Mark end on the last value, instead of \r
+                command[cur-1] = '\0';
+
+                // Exit the loop for input
+                break;
+            }
+        }
+		
+		// Turn off serial interrupt while processing the command
+		IE = 0x82;
+	}
+	
+	return;
+}
+
+
 void main()
 {
-    // Variables) command: Serial Input Value(string), cur: input cursor for command[30]
-    unsigned char command[MAX_SERIAL_LENGTH], cur;
-
     // Variables) *(first, second, third)command: First, Second, Third Command seperated by blank
     unsigned char *firstCommand, *secondCommand, *thirdCommand;
 
@@ -291,78 +382,18 @@ void main()
     TL1 = -6; // Set initial value at TL1
     SCON = 0x50; // Set Serial Mode 1 with Enabling Serial Read
     TR1 = 1; // Start Timer 1
-    IE = 0x82; // Interrupt 1 Enable
-
+    IE = 0x92; // Enable Interrupt 1, 4
+    IP = 0x10; // Set priorty at Serial Interrupt than Timer 0 Interrupt
+	
+	
     // Initialize the value of variable command
     memset(command, '\0', sizeof(command));
     
     // Loop Forever
     while(1)
     {
-        // Reset cursor for input value
-        cur = 0;
-
-        // Loop Until the input finishes
-        while(1)
-        {
-            // Wait Until the input finish
-            while(!RI);
-
-            // Reset Serial Input Bit
-            RI = 0;
-
-            // Get value of SBUF, and increase cursor
-            command[cur++] = SBUF;
-
-            // If the input letter is small letter, change with capital letter
-            if(command[cur-1] >= 'a' && command[cur-1] <= 'z')
-            {
-                command[cur-1] -= 'a' - 'A';
-            }
-
-            // If the command input finish
-            if(command[cur-1] == '\r')
-            {
-                // Mark end on the last value, instead of \r
-                command[cur-1] = '\0';
-
-                // Exit the loop for input
-                break;
-            }
-
-	    // If the command input meets line feed (\n)
-            if(command[cur-1] == '\n')
-            {
-                // Mark end on the last value, instead of \n
-                command[cur-1] = '\0';
-
-                // Exit the loop for input
-                break;
-            }
-
-            // If the command input exceeds the variable's size
-            if(cur >= MAX_SERIAL_LENGTH)
-            {
-                // Clear Serial Buffer
-                do{
-                    // Wait Until the input finish
-                    while(!RI);
-
-                    // Reset Serial Input Bit
-                    RI = 0;
-
-                    // Get serial value at the last value of variable command
-                    command[cur-1] = SBUF;
-
-                }while(command[cur-1] != '\r'); // Loop until the last value was processed
-
-                // Mark end on the last value, instead of \r
-                command[cur-1] = '\0';
-
-                // Exit the loop for input
-                break;
-            }
-        }
+	// Wait until the serial input occurs
+        while(command[0] == '\0');
 
         // Get the first command
         firstCommand = strtok(command, " ");
@@ -537,15 +568,15 @@ void main()
                     
                     // Send the data to Serial Output
                     SBUF = Key_Input;
-
-                    // Wait Until the output finish
-                    while(!TI);
-
-                    // Reset Serial Output Bit
-                    TI = 0;
                 }
             }
         }
+		
+		// Reset command[0]'s value to '\0' to indicate there is no data to process
+		command[0] = '\0';
+		
+		// Enable serial interrupt
+		IE = 0x92;
 
     }
 
