@@ -56,8 +56,7 @@ INIT:
     MOV SCON, #50H ; Serial1 Mode 1 with Input Enabled
     CLR RI ; Clear Serial Read Flag
     SETB TR1 ; Start Timer
-
-    ; Move to Main Function
+    SJMP MAIN ; Move to Main Function
 
 MAIN:
     ; Reset Input Pointer
@@ -87,10 +86,20 @@ READ:
 READ_CONTINUE:
     MOV @R0, A ; Move the data to @R0
     INC R0 ; Increse R0 Pointer
-    CJNE A, #0DH, READ ; Do until the Serial data is \r (meaning that the input finished)
+    
+    ; Find if the last letter of the input is '\r' or '\n'
+    
+    ; Find if the last letter of the input is '\n'
+    CJNE A, #0AH, COMPARE_SERIAL_END ; If the Serial data is '\n' (meaning that a line of a input finished)
+    DEC R0 ; Decrese R0 Pointer, to modify the last letter of the input
+    MOV @R0, #0DH ; Replace '\n' with '\r' at the last letter of the input
+    SJMP LINE_FINISHED
+    
+COMPARE_SERIAL_END: ; Find if the last letter of the input is '\r'
+    CJNE A, #0DH, READ ; Do until the Serial data is '\r' (meaning that the input finished)
 
     ; Return to Main Function
-    RET
+LINE_FINISHED: RET
 
 
 ; Compare & Run Function
