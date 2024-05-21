@@ -43,7 +43,7 @@
 
 
 
-// set the max number of letters of the serial input command
+// Set the max number of letters of the serial input command
 #define MAX_SERIAL_LENGTH 30
 
 sbit LED_and_Segment_Pin0 = 0x90/*P2.0 port*/; // LED & Segment Pin 0
@@ -275,18 +275,18 @@ unsigned char getInputNum(unsigned char* input)
 */
 void serialCommand() interrupt 4
 {
-	// Variable) cur: input cursor for command[MAX_SERIAL_LENGTH]
-	unsigned char cur = 0;
+    // Variable) cur: input cursor for command[MAX_SERIAL_LENGTH]
+    unsigned char cur = 0;
+
+    // If TI flag was enabled, just clear the TI flag
+    if(TI)
+    {
+	TI = 0;
+    }
 	
-	// If TI flag was enabled, just clear the TI flag
-	if(TI)
-	{
-		TI = 0;
-	}
-	
-	// If RI flag was enabled, process the input
-	if(RI)
-	{
+    // If RI flag was enabled, process the input
+    if(RI)
+    {
         // Loop Until the input finishes
         while(1)
         {
@@ -343,18 +343,18 @@ void serialCommand() interrupt 4
                 }while(command[cur - 1] != '\r'); // Loop until the last value was processed
 
                 // Mark end on the last value, instead of \r
-                command[cur-1] = '\0';
+                command[cur - 1] = '\0';
 
                 // Exit the loop for input
                 break;
             }
         }
 		
-		// Turn off serial interrupt while processing the command
-		IE = 0x82;
-	}
-	
-	return;
+	// Turn off serial interrupt while processing the command
+	IE = 0x82;
+    }
+
+    return;
 }
 
 
