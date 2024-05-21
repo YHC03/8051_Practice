@@ -71,11 +71,11 @@ CONTINUE_FIND: CJNE A, #'*', NUMBER_INPUT ; If the last letter is *
     INC R7 ; Increase the number of *
 
     CJNE R7, #2, IF_8 ; If * has been encounterd twice. Else check if * has been encountered 8 times.
-        CJNE R0, #32H, COMPARE ; If there is a number input, jump to COMPARE label to find if the input value is the same as the password
-        LJMP WAIT ; If there is no number input, wait until the password setting input finishes
+    CJNE R0, #32H, COMPARE ; If there is a number input, jump to COMPARE label to find if the input value is the same as the password
+    LJMP WAIT ; If there is no number input, wait until the password setting input finishes
 
 IF_8: CJNE R7, #8, WAIT ; If * has been encountered 8 times. Else wait until the other command was input
-        LJMP SET_PASSWORD ; Jump to SET_PASSWORD label
+    LJMP SET_PASSWORD ; Jump to SET_PASSWORD label
 
 
 NUMBER_INPUT:

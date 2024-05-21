@@ -82,6 +82,13 @@ Serial Port의 Baud Rate는 4800 baud rate이며 Serial 통신에서는 Parity B
 - Password 길이에 제한을 두지는 않았지만, 16자가 넘어가면 Overflow 오류가 발생한다.
 
 ---
+### 6. FizzBuzz_Solver
+
+##### 8051의 Serial 입출력을 이용한 FizzBuzz 문제를 해결하는 프로그램
+
+1부터 Serial을 통해 입력받은 숫자까지의 자연수에 대해, FizzBuzz 문제를 해결하여 그 결과를 Serial을 통해 출력한다.  
+
+---
 ### 참고 사항
 
 - 2, 3, 5번 프로젝트는 EdSim51DI의 회로도를 기준으로 작성되었습니다.  
@@ -90,4 +97,4 @@ Serial Port의 Baud Rate는 4800 baud rate이며 Serial 통신에서는 Parity B
 
 ---
 작성자 : YHC03  
-최종 작성일 : 2024/5/18  
+최종 작성일 : 2024/5/21  
