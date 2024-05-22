@@ -25,7 +25,7 @@
  *
  * The number of the input number is 4 to 8.
  *
- * Based on EdSim51DI's unmodified circuit.
+ * Based on EdSim51DI's unmodified circuit with AND Gate Enabled settings.
  *
  * This project uses Serial Input 0 at P3.1 port, and the baud rate is 4800 baud rate without a Parity Bit. The clock which the 8051 using is 11.0592MHz.
  *

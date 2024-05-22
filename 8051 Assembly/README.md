@@ -91,7 +91,7 @@ Serial Port의 Baud Rate는 4800 baud rate이며 Serial 통신에서는 Parity B
 ---
 ### 참고 사항
 
-- 2, 3, 5번 프로젝트는 EdSim51DI의 회로도를 기준으로 작성되었습니다.  
+- 2, 3, 5번 프로젝트는 EdSim51DI의 회로도를 기준으로 작성되었습니다. 특히, 5번 프로젝트의 경우, AND Gate Enabled 설정이 필요합니다.  
 - 4번 프로젝트는 EdSim51DI의 회로도를 기준으로 작성되었으나, Motor Forward는 P3.6, Motor Reverse는 P3.7 Port를 이용합니다.  
 - 4, 5번 프로젝트는 마이크로프로세서 및 HDL 과목의 2024년 이전 수업의 과제를 일부 변형한 프로젝트입니다.  
 

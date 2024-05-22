@@ -15,7 +15,7 @@
 ; But if the password correct, LED and Motor will be turned on as mentioned above, after turning off the LED and Motor by detection of the input.
 ; 
 ;
-; Based on EdSim51DI's unmodified circuit.
+; Based on EdSim51DI's unmodified circuit with AND Gate Enabled settings.
 ;
 ;
 ; Written by: YHC03
