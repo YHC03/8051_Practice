@@ -5,7 +5,7 @@
 ; Using EdSim51DI's Unmodified circuit.
 ; 8051 with 12MHz Clock
 ; Delay is Inaccurate in Few Machine Cycle.
-; Date: 2024/4/17-2024/5/11
+; Date: 2024/4/17-2024/5/22
 ; Written By: YHC03
 ;
 ; Switch Usage
@@ -105,44 +105,35 @@ RET
 SETTINGS:
 	MOV R4, #0H
 	WaitUntil: ACALL PRINT
-		MOV C, P2.0
-	JNC WaitUntil
+	JNB P2.0, WaitUntil
 
 ; Settings Stage 1 : Minute
 SetMinute:
 	ACALL PRINT
-	MOV C, P2.1
-	JC SetMinute_2nd
+	JB P2.1, SetMinute_2nd
 	ACALL IncreaseMinute
 	WaitUntilMinute1: ACALL PRINT
-		MOV C, P2.1
-	JNC WaitUntilMinute1
+	JNB P2.1, WaitUntilMinute1
 
 SetMinute_2nd:
-	MOV C, P2.0
-	JC SetMinute
+	JB P2.0, SetMinute
 	INC R4
 	WaitUntilMinute2: ACALL PRINT
-		MOV C, P2.0
-	JNC WaitUntilMinute2
+	JNB P2.0, WaitUntilMinute2
 
 ; Settings Stage 2: Second
 SetSecond:
 	ACALL PRINT
-	MOV C, P2.1
-	JC SetSecond_2nd
+	JB P2.1, SetSecond_2nd
 	ACALL IncreaseSecond
 	WaitUntilSecond1: ACALL PRINT
-		MOV C, P2.1
-	JNC WaitUntilSecond1
+	JNB P2.1, WaitUntilSecond1
 
 SetSecond_2nd:
-	MOV C, P2.0
-	JC SetSecond
+	JB P2.0, SetSecond
 	INC R4
 	WaitUntilSecond2: ACALL PRINT
-		MOV C, P2.0
-	JNC WaitUntilSecond2
+	JNB P2.0, WaitUntilSecond2
 
 RET
 
