@@ -4,16 +4,21 @@
 ;
 ; To use the unlock mode, press '*', press the numbers, and press '*' again. The initial password is 0000.
 ; If the password correct, LED on P1.0 will be turned on, and Motor on P3.0, P3.1 will run forward.
-; If the password does not correct, nothing will happen.
+; If the password does not correct, the segment will print 'E' without the dot of the segment.
 ;
 ; To use the password change mode, press '*' 4 times, press the numbers, and press '*' 4 times again.
 ; Then the password will be changed.
 ;
 ; Press '#' anytime if you want to abort the input process. The segment will not print anything.
 ;
-; If the input was detected, LED on P1.0 will be turned off, and Motor on P3.0, P3.1 will stop.
+; If the input was detected, LED and Segment on P1.0 will be turned off, and Motor on P3.0, P3.1 will stop.
+; And, if the input is '*', all of the LED will not be turned on.
+; If the input is a number, one of the LED will be turned on, starting from LED0(on P1.0) to LED7(on P1.7). If one of the LED was turned on, the other LEDs will be turned off.
+;
 ; But if the password correct, LED and Motor will be turned on as mentioned above, after turning off the LED and Motor by detection of the input.
+; If the input is invalid, the segment will print 'E' with the dot of the segment.
 ; 
+; The number of the input number is 4 to 8.
 ;
 ; Based on EdSim51DI's unmodified circuit with AND Gate Enabled settings.
 ;
@@ -25,6 +30,7 @@
 ;
 ; R0(0x00): Pointer to store the input value
 ; R1(0x01): Pointer to read password to compare password, or reset the input value
+; R2(0x02): Memory to count the number of input without '*' and '#' at a input
 ; R7(0x07): Memory to count the number of '*'
 ; 0x30 - 0x5F: Memory for store input value
 ; 0x70 - 0x7F: Memory for store password
@@ -46,17 +52,21 @@ INIT:
     CLR P3.0
     CLR P3.1
 
-    ; Set the Keypad with Input Mode
-    MOV P0, #0F0H
+    ; Set the Keypad with Input Mode, and turn off the Segment
+    MOV P0, #70H
 
     ; Move to Main Function
+    SJMP MAIN
 
 MAIN:
     LCALL CLEARCOMMAND ; Clear the input buffer
     MOV R0, #30H ; Reset the pointer for input
     MOV R7, #0 ; Reset the number of '*'
+    MOV R2, #0 ; Reset the number of the numbers input
     
 WAIT: JB P3.3, WAIT ; Wait until the Key Detected
+    CLR P0.7 ; Turn Off the Segment
+    MOV P1, #0FFH ; Clear the LED and Segment
     LCALL KEYPAD_CONTROL ; Get and save the keypad data 
     SETB P1.0 ; Turn off the LED which indicates the door is now unlocked
     CLR P3.0 ; Turn off the Motor which indicates the door is now unlocked
@@ -75,15 +85,89 @@ CONTINUE_FIND: CJNE A, #'*', NUMBER_INPUT ; If the last letter is *
     LJMP WAIT ; If there is no number input, wait until the password setting input finishes
 
 IF_8: CJNE R7, #8, WAIT ; If * has been encountered 8 times. Else wait until the other command was input
+    MOV A, R2 ; Get the count of number input
+    CLR C ; Clear Carry Bit to process subraction
+    SUBB A, #4 ; Subtract by 4, if the input is less then 4, the carry bit will be 1
+    JC ERROR_RESET ; Process the reset by wrong input
+
+    ; If there is no error
     LJMP SET_PASSWORD ; Jump to SET_PASSWORD label
 
 
 NUMBER_INPUT:
+    INC R2 ; Increse the number input
+    CJNE R2, #9, CONTINUE_READ ; If the input number count is 9
+    SJMP ERROR_RESET ; Process the reset by wrong input
+
+CONTINUE_READ:
+    ACALL PRINT_STATUS ; Print the input Status
     MOV A, R7 ; Get the number of *
     CJNE A, #1, NEXT_CRITERIA ; If the number of * is 1(assume unlock mode). Else check is the mode is password change mode
     SJMP WAIT ; If there is no number input, wait until the input finishes
-NEXT_CRITERIA: CJNE A, #4, MAIN ; If the number of * is 4(assmume password change mode). Else reset the input mode, as the input is invalid.
+NEXT_CRITERIA: CJNE A, #4, ERROR_RESET ; If the number of * is 4(assmume password change mode). Else reset the input mode, as the input is invalid.
     SJMP WAIT ; If there is no number input, wait until the input finishes
+
+
+ERROR_RESET:
+    SETB P0.7 ; Turn on the segment
+    MOV P1, #06H ; Print 'E.' at segment
+    SJMP MAIN ; Reset
+
+
+; Print the number of the input without '*' and '#'
+PRINT_STATUS:
+    MOV A, R2 ; Get the input count
+
+FIND_IF_1: ; If the input count is 1
+    DEC A ; Move to next number to compare
+    JNZ FIND_IF_2 ; If the number is not 1, find if the number is 2
+    MOV P1, #0FEH ; Turn on LED0, and turn off the other LEDs
+    RET ; Return to Previous Function
+
+FIND_IF_2: ; If the input count is 2
+    DEC A ; Move to next number to compare
+    JNZ FIND_IF_3 ; If the number is not 2, find if the number is 3
+    MOV P1, #0FDH ; Turn on LED1, and turn off the other LEDs
+    RET ; Return to Previous Function
+
+FIND_IF_3: ; If the input count is 3
+    DEC A ; Move to next number to compare
+    JNZ FIND_IF_4 ; If the number is not 3, find if the number is 4
+    MOV P1, #0FBH ; Turn on LED2, and turn off the other LEDs
+    RET ; Return to Previous Function
+
+FIND_IF_4: ; If the input count is 4
+    DEC A ; Move to next number to compare
+    JNZ FIND_IF_5 ; If the number is not 4, find if the number is 5
+    MOV P1, #0F7H ; Turn on LED3, and turn off the other LEDs
+    RET ; Return to Previous Function
+
+FIND_IF_5: ; If the input count is 5
+    DEC A ; Move to next number to compare
+    JNZ FIND_IF_6 ; If the number is not 5, find if the number is 6
+    MOV P1, #0EFH ; Turn on LED4, and turn off the other LEDs
+    RET ; Return to Previous Function
+
+FIND_IF_6: ; If the input count is 6
+    DEC A ; Move to next number to compare
+    JNZ FIND_IF_7 ; If the number is not 6, find if the number is 7
+    MOV P1, #0DFH ; Turn on LED5, and turn off the other LEDs
+    RET ; Return to Previous Function
+
+FIND_IF_7: ; If the input count is 7
+    DEC A ; Move to next number to compare
+    JNZ FIND_IF_8 ; If the number is not 7, find if the number is 8
+    MOV P1, #0BFH ; Turn on LED6, and turn off the other LEDs
+    RET ; Return to Previous Function
+
+FIND_IF_8: ; If the input count is 8
+    DEC A ; Move to next number to compare
+    JNZ NOT_FOUND ; If the number is not 8, return to previous function
+    MOV P1, #07FH ; Turn on LED7, and turn off the other LEDs
+    RET ; Return to Previous Function
+
+NOT_FOUND: ; If the number is not 8, return to previous function
+    RET ; Return to Previous Function
 
 
 ; Password Settings
@@ -94,7 +178,7 @@ SET_PASSWORD_LOOP: ; Loop until the password ends
     MOV A, @R0
     CJNE A, #'*', CONTIUNE_CHANGE ; If * was found, the password is now end
     MOV @R1, #0DH ; Put \r at the end of the password
-    SJMP MAIN ; Reset the input
+    AJMP MAIN ; Reset the input
 CONTIUNE_CHANGE:
     MOV @R1, A ; Save the password letter
     INC R0 ; Move to next letter
@@ -104,6 +188,11 @@ CONTIUNE_CHANGE:
 
 ; Compare the password with the one saved in 8051
 COMPARE:
+    MOV A, R2 ; Get the count of number input
+    CLR C ; Clear Carry Bit to process subraction
+    SUBB A, #4 ; Subtract by 4, if the input is less then 4, the carry bit will be 1
+    JC ERROR_RESET ; Process the reset by wrong input
+
     MOV R0, #31H ; Move the pointer to first number
     MOV R1, #70H ; Move the pointer to first password location
 COMPARE_LOOP: ; Loop until the password ends
@@ -123,12 +212,14 @@ FIND_END: ; Find if the password ends
 
     ; The Password is Right
     SETB P3.0 ; Turn on the Motor
-    CLR P1.0 ; Turn on the LED
+    MOV P1, #0H ; Turn on all LED
 
     LJMP MAIN ; Reset the input
 
     
-WRONG: ; If the password wrong
+WRONG: ; If the password is wrong
+    SETB P0.7 ; Turn on the segment
+    MOV P1, #86H ; Print 'E' at segment
     LJMP MAIN ; Reset the input
 
 
@@ -147,15 +238,15 @@ CLEARCOMMAND_CONTINUE:
 KEYPAD_CONTROL:
     LCALL KEYPAD_INPUT ; Get the Keypad value
     INC R0 ; Move to next memory
-    MOV P0, #0F0H ; Set Keypad Detection Mode
+    MOV P0, #70H ; Set Keypad Detection Mode
 WAIT_UNPRESSED: MOV A, P0
-    CJNE A, #0F0H, WAIT_UNPRESSED ; Wait until the keypad undetectd
+    CJNE A, #70H, WAIT_UNPRESSED ; Wait until the keypad undetectd
     RET
 
 
 ; Find the keypad input(Function)
 KEYPAD_INPUT:
-    MOV P0, #0FFH ; Set Input Mode
+    MOV P0, #7FH ; Set Input Mode
 
     CLR P0.3 ; Scan 1 to 3
     JB P0.6, NEXT_2 ; If 1 was found, store the value, and return from the function

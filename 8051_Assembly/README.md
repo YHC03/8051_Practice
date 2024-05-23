@@ -74,12 +74,16 @@ Serial Port의 Baud Rate는 4800 baud rate이며 Serial 통신에서는 Parity B
 
 입력은 Keypad를 이용해 받는다.  
 - Unlock Mode 이용 시, *를 누른 후, 숫자들을 누르고, 다시 *를 누른다. 초기 비밀번호는 0000이다.
-    - 정확한 Password가 입력된 경우, P1.0에 연결된 LED를 점등하고, P3.0, P3.1에 연결된 Motor를 작동시킨다.
-    - 틀린 Password가 입력된 경우, 초기 입력 상태로 돌아간다.
+    - 정확한 Password가 입력된 경우, 모든 LED를 점등하고, P3.0, P3.1에 연결된 Motor를 작동시킨다.
+    - 틀린 Password가 입력된 경우, Segment에 E가 출력되며 Segment의 점은 점등되지 않는다.
 - Password Change Mode 이용 시, *를 4번 누른 후, 숫자들을 누르고, 다시 *를 4번 누른다.
 - #가 입력된 경우, 언제나 초기 입력 상태로 돌아간다.
+- 잘못된 명령어 입력 시, Segment에 E가 출력되며 Segment의 점 또한 점등된다.
 - 입력값이 입력된 경우, LED와 Motor의 작동을 멈춘다.
-- Password 길이에 제한을 두지는 않았지만, 16자가 넘어가면 Overflow 오류가 발생한다.
+- Password의 길이는 4~8자리이며, 이 범위를 벗어난 경우, 잘못된 명령어로 인식한다. 특히, 9자리 이상의 Password 입력 시도 시, *을 다시 입력하지 않더라도 잘못된 명령어로 처리되며, 다시 초기 상태로 되돌아간다.
+- 입력값이 *인 경우, 모든 LED를 소등한다.
+- 입력값이 숫자인 경우, LED가 LED0(P1.0에 있음)에서 LED7(P1.7에 있음) 순서로 점등하며, 동시에 다른 LED들은 소등한다.
+- Segment 출력 시를 제외한 나머지 경우에는, Segment가 점등되지 않는다.
 
 ---
 ### 6. FizzBuzz_Solver
@@ -97,4 +101,4 @@ Serial Port의 Baud Rate는 4800 baud rate이며 Serial 통신에서는 Parity B
 
 ---
 작성자 : YHC03  
-최종 작성일 : 2024/5/21  
+최종 작성일 : 2024/5/23  
