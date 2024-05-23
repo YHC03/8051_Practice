@@ -40,6 +40,14 @@
         <td>주어진 LED를 끈다.</td>
     </tr>
     <tr>
+        <td>LED BLINK (0-255 사이의 숫자)</td>
+        <td>LED를 입력받은 Machine Cycle 주기로 깜빡인다.</td>
+    </tr>
+    <tr>
+        <td>LED BLINK STOP</td>
+        <td>LED의 깜빡임을 멈춘다.</td>
+    </tr>
+    <tr>
         <td>SEGMENT ON</td>
         <td>Segment를 켠다.</td>
     </tr>
@@ -60,8 +68,28 @@
         <td>Motor를 뒤로 회전시킨다.</td>
     </tr>
     <tr>
+        <td>MOTOR BACKWARD</td>
+        <td>Motor를 뒤로 회전시킨다.</td>
+    </tr>
+    <tr>
         <td>MOTOR STOP</td>
         <td>Motor를 정지시킨다.</td>
+    </tr>
+    <tr>
+        <td>KEYPAD LED ON</td>
+        <td>Keypad에 입력된 0-7 사이의 값의 번호의 LED를 점등한다.</td>
+    </tr>
+    <tr>
+        <td>KEYPAD LED OFF</td>
+        <td>Keypad에 입력된 0-7 사이의 값의 번호의 LED를 소등한다.</td>
+    </tr>
+    <tr>
+        <td>KEYPAD UART</td>
+        <td>Keypad에 입력된 값을 Serial 통신으로 전송한다.</td>
+    </tr>
+    <tr>
+        <td>KEYPAD SEGMENT</td>
+        <td>Keypad에 입력된 값을 Segment에 출력한다.</td>
     </tr>
 </table>
 
@@ -102,4 +130,4 @@ Serial Port의 Baud Rate는 4800 baud rate이며 Serial 통신에서는 Parity B
 
 ---
 작성자 : YHC03  
-최종 작성일 : 2024/5/23  
+최종 작성일 : 2024/5/24  
