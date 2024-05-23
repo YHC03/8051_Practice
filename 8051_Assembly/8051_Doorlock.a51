@@ -9,11 +9,12 @@
 ; To use the password change mode, press '*' 4 times, press the numbers, and press '*' 4 times again.
 ; Then the password will be changed.
 ;
-; Press '#' anytime if you want to abort the input process. The segment will not print anything.
+; Press '#' anytime if you want to abort the input process. The LED and segment will not print anything.
 ;
+; If the input is the first input of '*', or if there is no input of number, all of the LED will be turned off.
 ; If the input was detected, LED and Segment on P1.0 will be turned off, and Motor on P3.0, P3.1 will stop.
-; And, if the input is '*', all of the LED will not be turned on.
 ; If the input is a number, one of the LED will be turned on, starting from LED0(on P1.0) to LED7(on P1.7). If one of the LED was turned on, the other LEDs will be turned off.
+; If the password change mode finishes, all other LEDs except the LED which is now turned on will be turned on, except the LED which is turned on previously. 
 ;
 ; But if the password correct, LED and Motor will be turned on as mentioned above, after turning off the LED and Motor by detection of the input.
 ; If the input is invalid, the segment will print 'E' with the dot of the segment.
@@ -78,6 +79,7 @@ WAIT: JB P3.3, WAIT ; Wait until the Key Detected
     SJMP MAIN ; Reset the input process
 
 CONTINUE_FIND: CJNE A, #'*', NUMBER_INPUT ; If the last letter is *
+    ACALL PRINT_STATUS ; Print the input Status
     INC R7 ; Increase the number of *
 
     CJNE R7, #2, IF_8 ; If * has been encounterd twice. Else check if * has been encountered 8 times.
@@ -114,9 +116,14 @@ ERROR_RESET:
     SJMP MAIN ; Reset
 
 
-; Print the number of the input without '*' and '#'
+; Print the number of the input without '*' and '#'(Function)
 PRINT_STATUS:
     MOV A, R2 ; Get the input count
+
+    ; If the input count is 0
+    JNZ FIND_IF_1 ; If the number is not 0, find if the number is 1
+    MOV P1, #0FFH ; Turn off all LED
+    RET ; Return to Previous Function
 
 FIND_IF_1: ; If the input count is 1
     DEC A ; Move to next number to compare
@@ -178,6 +185,8 @@ SET_PASSWORD_LOOP: ; Loop until the password ends
     MOV A, @R0
     CJNE A, #'*', CONTIUNE_CHANGE ; If * was found, the password is now end
     MOV @R1, #0DH ; Put \r at the end of the password
+
+    XRL P1, #0FFH ; Inverse all LED
     AJMP MAIN ; Reset the input
 CONTIUNE_CHANGE:
     MOV @R1, A ; Save the password letter

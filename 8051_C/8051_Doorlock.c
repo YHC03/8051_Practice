@@ -51,16 +51,26 @@ sbit INTR1 = 0xB3/*P3.3*/;
 sfr LED = 0x90/*P2*/;
 
 
+/* keypadFinalProcess() Function
+ *
+ * Function: Reset the Keypad input mode
+ * No input and output variable
+*/
+void keypadFinalProcess()
+{
+	PORT_0 = 0x70; // Reset P0 for get input value
+	while(!INT1); // Wait until the Keypad Input Undetected
+	return;
+}
+
+
 /* getKeypadValue() Function
  *
  * Function: Find the value of the keypad detected, and wait until the keypad undetectd
  * No input and output variable
 */
 unsigned char getKeypadValue()
-{
-	// Variables) output: the value to output
-	unsigned char output = '#'; // Initialize with #(for reset the input mode) for the case with no input(Simultaneously clear the keypad)
-		
+{	
 	// Set the P0 at Port Reading Mode
 	PORT_0 = 0x7F;
 		
@@ -68,14 +78,14 @@ unsigned char getKeypadValue()
 	OUT_123 = 0;
 	if(!IN_1)
 	{
-		output = '1';
-		goto KEYPAD_FINAL_PROCESS;
+		keypadFinalProcess();
+		return '1';
 	}else if(!IN_2){
-		output = '2';
-		goto KEYPAD_FINAL_PROCESS;
+		keypadFinalProcess();
+		return '2';
 	}else if(!IN_3){
-		output = '3';
-		goto KEYPAD_FINAL_PROCESS;
+		keypadFinalProcess();
+		return '3';
 	}
 		
 	// Find 4 to 6
@@ -83,14 +93,14 @@ unsigned char getKeypadValue()
 	OUT_456 = 0;
 	if(!IN_1)
 	{
-		output = '4';
-		goto KEYPAD_FINAL_PROCESS;
+		keypadFinalProcess();
+		return '4';
 	}else if(!IN_2){
-		output = '5';
-		goto KEYPAD_FINAL_PROCESS;
+		keypadFinalProcess();
+		return '5';
 	}else if(!IN_3){
-		output = '6';
-		goto KEYPAD_FINAL_PROCESS;
+		keypadFinalProcess();
+		return '6';
 	}
 		
 	// Find 7 to 9
@@ -98,14 +108,14 @@ unsigned char getKeypadValue()
 	OUT_789 = 0;
 	if(!IN_1)
 	{
-		output = '7';
-		goto KEYPAD_FINAL_PROCESS;
+		keypadFinalProcess();
+		return '7';
 	}else if(!IN_2){
-		output = '8';
-		goto KEYPAD_FINAL_PROCESS;
+		keypadFinalProcess();
+		return '8';
 	}else if(!IN_3){
-		output = '9';
-		goto KEYPAD_FINAL_PROCESS;
+		keypadFinalProcess();
+		return '9';
 	}
 		
 	// Find *, 0, and #
@@ -113,23 +123,18 @@ unsigned char getKeypadValue()
 	OUT_REM = 0;
 	if(!IN_1)
 	{
-		output = '*';
-		goto KEYPAD_FINAL_PROCESS;
+		keypadFinalProcess();
+		return '*';
 	}else if(!IN_2){
-		output = '0';
-		goto KEYPAD_FINAL_PROCESS;
+		keypadFinalProcess();
+		return '0';
 	}else if(!IN_3){
-		output = '#';
-		goto KEYPAD_FINAL_PROCESS;
+		keypadFinalProcess();
+		return '#';
 	}
-		
-	// After finding the key Deteced
-KEYPAD_FINAL_PROCESS:
-	PORT_0 = 0x70; // Reset P0 for get input value
-	while(!INT1); // Wait until the Keypad Input Undetected
-		
-	// Return the output value
-	return output;
+			
+	// Return '#'(command for reset the input mode) if the output value was not found
+	return '#';
 }
 
 

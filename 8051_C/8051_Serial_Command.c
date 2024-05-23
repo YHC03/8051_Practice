@@ -41,11 +41,10 @@
 */
 
 
-
-
 // Set the max number of letters of the serial input command
 #define MAX_SERIAL_LENGTH 30
 
+// Port Definition
 sbit LED_and_Segment_Pin0 = 0x90/*P2.0 port*/; // LED & Segment Pin 0
 sbit LED_and_Segment_Pin1 = 0x91/*P2.1 port*/; // LED & Segment Pin 1
 sbit LED_and_Segment_Pin2 = 0x92/*P2.2 port*/; // LED & Segment Pin 2
