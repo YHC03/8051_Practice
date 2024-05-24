@@ -48,6 +48,10 @@
         <td>LED의 깜빡임을 멈춘다.</td>
     </tr>
     <tr>
+        <td>SEGMENT USE (0-3 사이의 숫자)</td>
+        <td>이용할 Segment의 번호를 설정한다.</td>
+    </tr>
+    <tr>
         <td>SEGMENT ON</td>
         <td>Segment를 켠다.</td>
     </tr>
@@ -92,7 +96,7 @@
         <td>Keypad에 입력된 값을 Segment에 출력한다.</td>
     </tr>
 </table>
-
+만일, Serial 입력으로 소문자가 입력된 경우, 자동으로 대문자로 변환해 명령을 수행한다.  
 Serial Port의 Baud Rate는 4800 baud rate이며 Serial 통신에서는 Parity Bit를 이용하지 않는다. 또한, 8051의 Clock는 11.0592MHz이다.  
 
 ---

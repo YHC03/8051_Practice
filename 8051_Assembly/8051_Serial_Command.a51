@@ -8,6 +8,7 @@
 ; LED # OFF : Turn off that LED(0-7)
 ; LED BLINK ### : Blink all LED at machine cycle of the specific number(0-255)
 ; LED BLINK STOP : Stop Blinking all LED
+; SEGMENT USE # : Switch Segment Output to the number(0-3)
 ; SEGMENT ON : Turn on the Segment Display
 ; SEGMENT OFF : Turn of the Segment Display
 ; SEGMENT # : Print that number(0-9) on the Segment Display
@@ -22,6 +23,7 @@
 ;
 ; # for number
 ;
+; Small Alphabet letters from Serial input will automatically changed with capital letter and check if the input is the same as the command above.
 ;
 ; LED, Segment, Segment Enable swiches are based on EdSim51DI's unmodified circuit.
 ; Motor Forward is connected at P3.6 port, Motor Reverse is connected at P3.7 port.
@@ -100,11 +102,27 @@ READ:
     RET
 
 READ_CONTINUE:
+    MOV B, A ; Save the input data
+    CLR C ; Clear carry for subtraction
+    SUBB A, #'a' ; Subtract with 'a' for check if the data is a small letter of Alphabet
+    JC WRITE_ORIGINAL ; If the ASCII value of the input is smaller then 'a', the input is not a small letter of Alphabet, so save the data as it is
+    ; Not clearing carry bit before subtraction because if the carry bit is 1, the program will jump to WRITE_ORIGINAL label
+    MOV A, B ; Load the input data
+    SUBB A, #'z' ; Subtract with 'a' for check if the data is a small letter of Alphabet
+    JNC WRITE_ORIGINAL ; If the ASCII value of the input is larger then 'z', the input is not a small letter of Alphabet, so save the data as it is
+
+    ; The input data is a small letter of Alphabet 
+    MOV A, B ; Load the input data
+    XRL A, #20H ; Change input data(small letter of Alphabet) with capital letter
+    MOV B, A ; Save the modified data
+
+WRITE_ORIGINAL:
+    MOV A, B ; Load the input data
     MOV @R0, A ; Move the data to @R0
     INC R0 ; Increse R0 Pointer
     
     ; Find if the last letter of the input is '\r' or '\n'
-    
+
     ; Find if the last letter of the input is '\n'
     CJNE A, #0AH, COMPARE_SERIAL_END ; If the Serial data is '\n' (meaning that a line of a input finished)
     DEC R0 ; Decrese R0 Pointer, to modify the last letter of the input
@@ -247,17 +265,18 @@ LED_GET_BLINK_VALUE_LOOP:
     SETB TR0 ; Turn on Timer 0
     RET
 
+    ; Multiply previous value with 10, and add current data
 NEXT_BLINK_VALUE:
-    MOV A, R2
+    MOV A, R2 ; Get previous data
     MOV B, #10
-    MUL AB
-    MOV B, A
-    MOV A, @R1
-    XRL A, #30H
-    ADD A, B
-    MOV R2, A
-    INC R1
-    MOV A, @R1
+    MUL AB ; Multiply with 10
+    MOV B, A ; Temporary saves the result lower then 256 at register B
+    MOV A, @R1 ; Get current data
+    XRL A, #30H ; Process ASCII -> BCD
+    ADD A, B ; Add current data with previous data, which was multiplied with 10
+    MOV R2, A ; Saves current data
+    INC R1 ; Move to next data
+    MOV A, @R1 ; Get next data, and store at register A
     SJMP LED_GET_BLINK_VALUE_LOOP
 
 LED_GET_NUMBER:
@@ -305,7 +324,56 @@ JMP_FAILURE: RET
 ; If the First command is SEGMENT
 SEGMENT_CONTROL:
     MOV A, @R1 ; Get the first letter of the Second command
+    CJNE A, #'U', JMP_SEGMENT_ON ; Check if the Second command is 'USE'
 
+    MOV R4, #4 ; Set the length of value to find
+    MOV DPTR, #WORD_USE ; Get the value to find
+
+LOOP_SEGMENT_USE:
+    CLR A
+    MOVC A, @A+DPTR ; Get the data of current letter of compare data
+    MOV B, @R1 ; Get the data of current letter of input data
+    CJNE A, 0F0H, JMP_FAILURE ; If the command is not 'SEGMENT USE ' at this state, the command is invaild
+    INC DPTR ; Move to next letter
+    INC R1 ; Increase the data pointer of input value
+    DJNZ R4, LOOP_SEGMENT_USE ; Loop until the comparison of the value finished
+
+    ; The command is 'SEGMENT USE #'
+    MOV A, @R1 ; Get the data of current letter of input data
+    XRL A, #30H ; ASCII -> BCD
+
+    JNZ SEGMENT_1 ; If the data is not 0, move to compare if data equals with 1
+    ; Use segment 0
+    CLR P3.4
+    CLR P3.3
+    RET ; After the command finishes, return to main function
+
+SEGMENT_1:
+    DEC A ; Check if the data equals with 1
+    JNZ SEGMENT_2 ; If the data is not 1, move to compare if data equals with 2
+    ; Use segment 1
+    CLR P3.4
+    SETB P3.3
+    RET ; After the command finishes, return to main function
+
+SEGMENT_2:
+    DEC A; Check if the data equals with 2
+    JNZ SEGMENT_3 ; If the data is not 2, move to compare if data equals with 3
+    ; Use segment 2
+    SETB P3.4
+    CLR P3.3
+    RET ; After the command finishes, return to main function
+
+SEGMENT_3:
+    DEC A; Check if the data equals with 3
+    JNZ JMP_FAILURE ; If the data is not 3, the command is invaild
+    ; Use segment 3
+    SETB P3.4
+    SETB P3.3
+    RET ; After the command finishes, return to main function
+
+
+JMP_SEGMENT_ON: ; Find if the commend is 'SEGMENT ON'
     CJNE A, #'O', WRITE_SEGMENT ; If the first letter of the Second command is 'O', the command can be 'SEGMENT ON' or 'SEGMENT OFF'
     INC R1 ; Move to next letter
     MOV A, @R1 ; Get the next letter
@@ -730,6 +798,7 @@ WORD_LED: DB "LED " ; Word 'LED' with a blank on the right side of the word
 WORD_SEGMENT: DB "SEGMENT " ; Word 'SEGMENT' with a blank on the right side of the word
 WORD_MOTOR: DB "MOTOR " ; Word 'MOTOR' with a blank on the right side of the word
 WORD_KEYPAD: DB "KEYPAD " ; Word 'KEYPAD' with a blank on the right side of the word
+WORD_USE: DB "USE " ; Word 'USE' with a blank on the right side of the word
 WORD_BLINK: DB "BLINK " ; Word 'BLINK' with a blank on the right side of the word
 
 WORD_UART: DB "UART" ; Word 'UART'

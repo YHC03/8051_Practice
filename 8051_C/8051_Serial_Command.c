@@ -31,11 +31,14 @@
  * 
  * # for number, @ for Alphabet
  * 
+ * Small Alphabet letters from Serial input will automatically changed with capital letter and process the command above.
+ * 
  * 
  * LED, Segment, Segment Enable, Segment change, Segment, Keypad swiches are based on EdSim51DI's unmodified circuit.
  * Motor Forward is connected at P3.6 port, Motor Reverse is connected at P3.7 port.
  * 
  * This project uses Serial Input 0 at P3.1 port, and the baud rate is 4800 baud rate without a Parity Bit. The clock which the 8051 using is 11.0592MHz.
+ * 
  * 
  * Written By: YHC03
 */
