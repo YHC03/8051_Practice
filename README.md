@@ -4,5 +4,5 @@
 <br>
 
 ---
-[8051 Assembly Language Practice](https://github.com/YHC03/8051_Practice/tree/main/8051%20Assembly)  
-[8051 C Language Practice](https://github.com/YHC03/8051_Practice/tree/main/8051%20C)  
+[8051 Assembly Language Practice](https://github.com/YHC03/8051_Practice/tree/main/8051_Assembly)  
+[8051 C Language Practice](https://github.com/YHC03/8051_Practice/tree/main/8051_C)  
