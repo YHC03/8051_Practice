@@ -59,7 +59,7 @@ LINE_FINISHED_CHECK: CJNE A, #0AH, PROCESS_NUMBER ; If the Serial data is '\n', 
     SJMP MAIN ; Reset the process
 
 PROCESS_NUMBER:
-    XRL A, #30H ; ASCII to BCD
+    XRL A, #30H ; Convert ASCII Code value to number
     MOV R6, A ; Move the data to R6, the temporary register
     MOV A, R7 ; Move original data on R7 to A
     MOV B, #10
@@ -194,7 +194,7 @@ NUMBER_PRINT:
     ; If the value of 10^2 digit is 0, move to 10^1 digit
     JZ PRINT_10
 
-    ; Convert BCD to ASCII
+    ; Convert BCD to ASCII Code
     XRL A, #30H
 
     ; Print the value to Serial
@@ -217,7 +217,7 @@ PRINT_10:
     JNB 7FH, PRINT_1
 
 WRITE_10:
-    ; Convert BCD to ASCII
+    ; Convert BCD to ASCII Code
     XRL A, #30H
 
     ; Print the value to Serial
@@ -229,7 +229,7 @@ PRINT_1:
     ; Get the value of 10^0 digit of R6 at A
     MOV A, B
 
-    ; Convert BCD to ASCII
+    ; Convert BCD to ASCII Code
     XRL A, #30H
 
     ; Print the value to Serial

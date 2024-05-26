@@ -196,7 +196,7 @@ void main()
 			// If the value is a number
 			}else{
 				// If there is no * before the number, the command is invalid
-				if(!commandNum){ break;}
+				if(!commandNum){ break; }
 							
 				// Increase the number of the #
 				inputNum++;

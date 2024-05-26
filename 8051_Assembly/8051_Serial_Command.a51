@@ -105,11 +105,11 @@ READ_CONTINUE:
     MOV B, A ; Save the input data
     CLR C ; Clear carry for subtraction
     SUBB A, #'a' ; Subtract with 'a' for check if the data is a small letter of Alphabet
-    JC WRITE_ORIGINAL ; If the ASCII value of the input is smaller then 'a', the input is not a small letter of Alphabet, so save the data as it is
+    JC WRITE_ORIGINAL ; If the ASCII Code value of the input is smaller then 'a', the input is not a small letter of Alphabet, so save the data as it is
     ; Not clearing carry bit before subtraction because if the carry bit is 1, the program will jump to WRITE_ORIGINAL label
     MOV A, B ; Load the input data
     SUBB A, #'z' ; Subtract with 'a' for check if the data is a small letter of Alphabet
-    JNC WRITE_ORIGINAL ; If the ASCII value of the input is larger then 'z', the input is not a small letter of Alphabet, so save the data as it is
+    JNC WRITE_ORIGINAL ; If the ASCII Code value of the input is larger then 'z', the input is not a small letter of Alphabet, so save the data as it is
 
     ; The input data is a small letter of Alphabet 
     MOV A, B ; Load the input data
@@ -272,7 +272,7 @@ NEXT_BLINK_VALUE:
     MUL AB ; Multiply with 10
     MOV B, A ; Temporary saves the result lower then 256 at register B
     MOV A, @R1 ; Get current data
-    XRL A, #30H ; Process ASCII -> BCD
+    XRL A, #30H ; Convert ASCII Code value to number
     ADD A, B ; Add current data with previous data, which was multiplied with 10
     MOV R2, A ; Saves current data
     INC R1 ; Move to next data
@@ -280,7 +280,7 @@ NEXT_BLINK_VALUE:
     SJMP LED_GET_BLINK_VALUE_LOOP
 
 LED_GET_NUMBER:
-    XRL A, #30H ; ASCII -> BCD
+    XRL A, #30H ; Convert ASCII Code value to number
     MOV B, A ; Save the data
     INC R1 ; Move to blank command
 
@@ -340,7 +340,7 @@ LOOP_SEGMENT_USE:
 
     ; The command is 'SEGMENT USE #'
     MOV A, @R1 ; Get the data of current letter of input data
-    XRL A, #30H ; ASCII -> BCD
+    XRL A, #30H ; Convert ASCII Code value to number
 
     JNZ SEGMENT_1 ; If the data is not 0, move to compare if data equals with 1
     ; Use segment 0
@@ -405,7 +405,7 @@ WRITE_SEGMENT: ; The command is 'SEGMENT #' assumed, but the command can be inva
     CJNE R7, #0DH, JMP_FAILURE ; If the last letter is not \r, the command is invaild
 
     ; The command is 'SEGMENT #'
-    ; ASCII -> BCD
+    ; Convert ASCII Code value to number
     XRL A, #30H
 
     ; Get the segment data of the number
@@ -532,7 +532,7 @@ LOOP_KEYPAD_LED:
     MOV A, B
     JZ NO_NUMBER_INPUT ; If no data was found
 
-    XRL A, #30H ; ASCII -> BCD
+    XRL A, #30H ; Convert ASCII Code value to number
     MOV B, A
     ACALL LED_ON ; Turn on the LED
     RET ; After the command finishes, return to main function
@@ -551,7 +551,7 @@ JMP_KEYPAD_LED_OFF: ; Find if the command is 'KEYPAD LED OFF'
     MOV A, B
     JZ NO_NUMBER_INPUT ; If no data was found
 
-    XRL A, #30H ; ASCII -> BCD
+    XRL A, #30H ; Convert ASCII Code value to number
     MOV B, A
     ACALL LED_OFF ; Turn off the LED
     RET ; After the command finishes, return to main function
@@ -617,10 +617,10 @@ LOOP_KEYPAD_SEGMENT:
     ; Process if the input is '*' or '#' (Cannot Print on the segment)
     CLR C
     SUBB A, #'0'
-    JC NO_NUMBER_SEGMENT ; When the input is '*' or '#', the carry bit will be 1, as the ASCII value of '*' and '#' is less then '0'.
+    JC NO_NUMBER_SEGMENT ; When the input is '*' or '#', the carry bit will be 1, as the ASCII Code value of '*' and '#' is less then '0'.
 
     MOV A, B ; Get the data from register B
-    XRL A, #30H ; ASCII -> BCD
+    XRL A, #30H ; Convert ASCII Code value to number
     MOV DPTR, #SEGMENT_DATA
     MOVC A, @A+DPTR ; Get the Segment data
     MOV P1, A
@@ -632,7 +632,7 @@ NO_NUMBER_SEGMENT:
 KEYPAD_FAIL: RET
 
 
-; Get the keypad value, and send to B register as ASCII character(0 for nothing, Function)
+; Get the keypad value, and send to B register as ASCII Code(0 for nothing, Function)
 KEYPAD_GET_NUM:
     MOV A, #0H
     MOV B, #0H

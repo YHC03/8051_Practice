@@ -417,7 +417,7 @@ void main()
                     // Stop Timer 0
                     TR0 = 0;
                 }else{
-                    // Change Ascii value to number
+                    // Convert ASCII Code value to number
                     targNum = getInputNum(thirdCommand);
 
                     // Set the data to timer 0
@@ -429,7 +429,7 @@ void main()
                 }
             }else{ // If the second command is a number
 
-                // Change Ascii value to number
+                // Convert ASCII Code value to number
                 targNum = (*secondCommand) ^ 0x30;
 
                 // Get the third command
@@ -465,7 +465,7 @@ void main()
                 // Get the third command
                 thirdCommand = strtok(NULL, " ");
 
-                // Change Ascii value to number
+                // Convert ASCII Code value to number
                 targNum = (*thirdCommand) ^ 0x30;
 
                 // Change the segment to print the value
@@ -475,7 +475,7 @@ void main()
                 // Get the third command
                 thirdCommand = strtok(NULL, " ");
 
-                // Change Ascii value to number
+                // Convert ASCII Code value to number
                 targNum = (*thirdCommand) ^ 0x30;
 
                 // If the Number is 0 to 9, print the value on segment. Otherwise, the command is an Error
