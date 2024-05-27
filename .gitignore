@@ -22,5 +22,5 @@
 *.dev
 *.DEV
 *.lnk
-8051 C/*.asm
-8051 C/*.ASM
+8051_C/*.asm
+8051_C/*.ASM
