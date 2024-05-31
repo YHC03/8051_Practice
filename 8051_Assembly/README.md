@@ -126,12 +126,30 @@ Serial Port의 Baud Rate는 4800 baud rate이며 Serial 통신에서는 Parity B
 1부터 Serial을 통해 입력받은 숫자까지의 자연수에 대해, FizzBuzz 문제를 해결하여 그 결과를 Serial을 통해 출력한다.  
 
 ---
+### 7. 8051_Motor_Controller
+
+##### 8051에 연결된 Motor를 PWM 제어하는 프로그램
+
+Keypad를 통해 입력받은 값을 기준으로 연결된 Motor를 PWM 제어한다.  
+Keypad의 입력이 있을 때, 기존 MOTOR_SPEED 변수의 값에 10을 곱한 후, Keypad 입력값을 더해 MOTOR_SPEED 변수에 저장한다. 만일, 해당 연산의 결과가 255를 초과하는 경우 아래와 같은 연산을 수행한다.  
+
+- MOTOR_SPEED 변수의 값이 25를 초과하는 경우, MOTOR_SPEED 변수의 값의 100의 자리의 값을 제거한다.  
+    - 연산한 결과가 25를 초과하는 경우, 연산한 결과의 10의 자리의 값을 제거한다.  
+    - 연산한 결과가 25이고 Keypad에 입력된 값이 6 이상인 경우, 연산한 결과의 10의 자리의 값을 제거한다.  
+- MOTOR_SPEED 변수의 값이 25이고 Keypad에 입력된 값이 6 이상인 경우, MOTOR_SPEED 변수의 값의 10의 자리의 값을 제거한다.  
+
+위와 같은 연산을 진행한 후, 연산한 결과에 Keypad 입력값을 더해 MOTOR_SPEED 변수에 저장한다.
+<br>
+MOTOR_SPEED 변수의 값은 Segment를 통해 출력한다.  
+
+---
 ### 참고 사항
 
 - 2, 3, 5번 프로젝트는 EdSim51DI의 회로도를 기준으로 작성되었습니다. 특히, 5번 프로젝트의 경우, AND Gate Enabled 설정이 필요합니다.  
 - 4번 프로젝트는 EdSim51DI의 회로도를 기준으로 작성되었으나, Motor Forward는 P3.6, Motor Reverse는 P3.7 Port를 이용합니다.  
+- 7번 프로젝트는 EdSim51DI의 회로도를 기준으로 작성되었으나, Segment Selection Switch는 P2.7과 P2.6 Port를 이용합니다.  
 - 4, 5번 프로젝트는 마이크로프로세서 및 HDL 과목의 2024년 이전 수업의 과제를 일부 변형한 프로젝트입니다.  
 
 ---
 작성자 : YHC03  
-최종 작성일 : 2024/5/24  
+최종 작성일 : 2024/5/31  
