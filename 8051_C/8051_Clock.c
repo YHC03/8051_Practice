@@ -1,4 +1,4 @@
-#include<reg51.h>
+#include<8051.h>
 
 /*
  * 8051_Clock
@@ -14,7 +14,7 @@
  *
  * Written By: YHC03
  * Create Date: 2024/5/14
- * Last Modified Date: 2024/5/23
+ * Last Modified Date: 2024/6/16
 */
 
 
@@ -24,8 +24,8 @@ unsigned char second = 0;
 
 
 // Define Switches
-sbit enterSwitch = 0xA0;
-sbit plusSwitch = 0xA1;
+__sbit enterSwitch = 0xA0;
+__sbit plusSwitch = 0xA1;
 
 
 /*
@@ -62,7 +62,7 @@ void increaseSecond()
  * Function: Count when a seconds goes & Call increaseSecond() function when a second goes
  * No input and output variables
 */
-void TIMER_0_INTERRUPT() interrupt 1
+void TIMER_0_INTERRUPT() __interrupt(1)
 {
 	// To run 1 second, we have to run this interrupt 16 times
 	static unsigned char remaining = 16; // remainings to get 1 second

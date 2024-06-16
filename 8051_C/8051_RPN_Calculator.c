@@ -1,4 +1,4 @@
-#include<reg51.h>
+#include<8051.h>
 /*
 * Reverse Polish Notation Calculator
 * Function: 2-Digit Number Calculation
@@ -17,7 +17,7 @@
 * P2.1: Divide
 *
 * Create Date : 24/4/25
-* Update Date : 24/5/2
+* Update Date : 24/6/16
 *
 */
 
@@ -31,11 +31,11 @@ int result = 0;
 unsigned char dotLocation=0;
 
 // Define Input Pin
-sbit ENTER = 0xA0; // P2.0
-sbit PLUS = 0xA4; // P2.4
-sbit MINUS = 0xA3; // P2.3
-sbit MULTIPLY = 0xA2; // P2.2
-sbit DIVIDE = 0xA1; // P2.1
+__sbit ENTER = 0xA0; // P2.0
+__sbit PLUS = 0xA4; // P2.4
+__sbit MINUS = 0xA3; // P2.3
+__sbit MULTIPLY = 0xA2; // P2.2
+__sbit DIVIDE = 0xA1; // P2.1
 
 // Setup For Input Pin
 void setup()

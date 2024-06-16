@@ -1,4 +1,4 @@
-#include<reg51.h>
+#include<8051.h>
 #include<string.h> // To use strlen(), strcmp(), strtok() functions
 #include<math.h> // To use pow() function
 
@@ -48,29 +48,29 @@
 #define MAX_SERIAL_LENGTH 30
 
 // Port Definition
-sbit LED_and_Segment_Pin0 = 0x90/*P2.0 port*/; // LED & Segment Pin 0
-sbit LED_and_Segment_Pin1 = 0x91/*P2.1 port*/; // LED & Segment Pin 1
-sbit LED_and_Segment_Pin2 = 0x92/*P2.2 port*/; // LED & Segment Pin 2
-sbit LED_and_Segment_Pin3 = 0x93/*P2.3 port*/; // LED & Segment Pin 3
-sbit LED_and_Segment_Pin4 = 0x94/*P2.4 port*/; // LED & Segment Pin 4
-sbit LED_and_Segment_Pin5 = 0x95/*P2.5 port*/; // LED & Segment Pin 5
-sbit LED_and_Segment_Pin6 = 0x96/*P2.6 port*/; // LED & Segment Pin 6
-sbit LED_and_Segment_Pin7 = 0x97/*P2.7 port*/; // LED & Segment Pin 7
-sfr LED_and_Segment_All = 0x90/*P2 port*/; // LED & Segment Port(All)
+__sbit LED_and_Segment_Pin0 = 0x90/*P2.0 port*/; // LED & Segment Pin 0
+__sbit LED_and_Segment_Pin1 = 0x91/*P2.1 port*/; // LED & Segment Pin 1
+__sbit LED_and_Segment_Pin2 = 0x92/*P2.2 port*/; // LED & Segment Pin 2
+__sbit LED_and_Segment_Pin3 = 0x93/*P2.3 port*/; // LED & Segment Pin 3
+__sbit LED_and_Segment_Pin4 = 0x94/*P2.4 port*/; // LED & Segment Pin 4
+__sbit LED_and_Segment_Pin5 = 0x95/*P2.5 port*/; // LED & Segment Pin 5
+__sbit LED_and_Segment_Pin6 = 0x96/*P2.6 port*/; // LED & Segment Pin 6
+__sbit LED_and_Segment_Pin7 = 0x97/*P2.7 port*/; // LED & Segment Pin 7
+__sfr LED_and_Segment_All = 0x90/*P2 port*/; // LED & Segment Port(All)
 
-sbit segment_Switch = 0x87/*P0.7 port*/; // Segment Print Enable Switch
-sbit segment_SW0 = 0xB3/*P3.3 port*/; // Segment Change Switch 0
-sbit segment_SW1 = 0xB4/*P3.4 port*/; // Segment Change Switch 1
-sbit motor_FORWARD = 0xB6/*P3.6 port*/; // Motor Forward Switch
-sbit motor_REVERSE = 0xB7/*P3.7 port*/; // Motor Reverse Switch
+__sbit segment_Switch = 0x87/*P0.7 port*/; // Segment Print Enable Switch
+__sbit segment_SW0 = 0xB3/*P3.3 port*/; // Segment Change Switch 0
+__sbit segment_SW1 = 0xB4/*P3.4 port*/; // Segment Change Switch 1
+__sbit motor_FORWARD = 0xB6/*P3.6 port*/; // Motor Forward Switch
+__sbit motor_REVERSE = 0xB7/*P3.7 port*/; // Motor Reverse Switch
 
-sbit KEYPAD_Y1 = 0x86/*P0.6 port*/; //Keypad Y1
-sbit KEYPAD_Y2 = 0x85/*P0.5 port*/; //Keypad Y2
-sbit KEYPAD_Y3 = 0x84/*P0.4 port*/; //Keypad Y3
-sbit KEYPAD_X1 = 0x83/*P0.3 port*/; //Keypad X1
-sbit KEYPAD_X2 = 0x82/*P0.2 port*/; //Keypad X2
-sbit KEYPAD_X3 = 0x81/*P0.1 port*/; //Keypad X3
-sbit KEYPAD_X4 = 0x80/*P0.0 port*/; //Keypad X4
+__sbit KEYPAD_Y1 = 0x86/*P0.6 port*/; //Keypad Y1
+__sbit KEYPAD_Y2 = 0x85/*P0.5 port*/; //Keypad Y2
+__sbit KEYPAD_Y3 = 0x84/*P0.4 port*/; //Keypad Y3
+__sbit KEYPAD_X1 = 0x83/*P0.3 port*/; //Keypad X1
+__sbit KEYPAD_X2 = 0x82/*P0.2 port*/; //Keypad X2
+__sbit KEYPAD_X3 = 0x81/*P0.1 port*/; //Keypad X3
+__sbit KEYPAD_X4 = 0x80/*P0.0 port*/; //Keypad X4
 
 
 // Global variable) command: Serial Input Value(string)
@@ -232,7 +232,7 @@ unsigned char getEnabledKey()
  * Function: Process the LED blinking
  * No input and output variable
 */
-void Blink_LED() interrupt 1
+void Blink_LED() __interrupt(1)
 {
     // Inverse the LED state
     LED_and_Segment_All = ~LED_and_Segment_All;
@@ -275,7 +275,7 @@ unsigned char getInputNum(unsigned char* input)
  * Function: Process the Serial Functions
  * No input and output variable
 */
-void serialCommand() interrupt 4
+void serialCommand() __interrupt(4)
 {
     // Variable) cur: input cursor for command[MAX_SERIAL_LENGTH]
     unsigned char cur = 0;

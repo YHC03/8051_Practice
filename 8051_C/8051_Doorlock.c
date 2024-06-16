@@ -1,4 +1,4 @@
-#include<reg51.h>
+#include<8051.h>
 #include<string.h> // To use strlen(), strncmp(), strncat() functions
 
 
@@ -37,18 +37,18 @@
 #define BUFFER_LENGTH 16
 
 // Port Definition
-sfr PORT_0 = 0x80/*P0*/;
-sbit OUT_REM = 0x80/*P0.0*/;
-sbit OUT_789 = 0x81/*P0.1*/;
-sbit OUT_456 = 0x82/*P0.2*/;
-sbit OUT_123 = 0x83/*P0.3*/;
-sbit IN_3 = 0x84/*P0.4*/;
-sbit IN_2 = 0x85/*P0.5*/;
-sbit IN_1 = 0x86/*P0.6*/;
+__sfr PORT_0 = 0x80/*P0*/;
+__sbit OUT_REM = 0x80/*P0.0*/;
+__sbit OUT_789 = 0x81/*P0.1*/;
+__sbit OUT_456 = 0x82/*P0.2*/;
+__sbit OUT_123 = 0x83/*P0.3*/;
+__sbit IN_3 = 0x84/*P0.4*/;
+__sbit IN_2 = 0x85/*P0.5*/;
+__sbit IN_1 = 0x86/*P0.6*/;
 
-sbit SEGMENT_ENABLE = 0x87/*P0.7*/;
-sbit INTR1 = 0xB3/*P3.3*/;
-sfr LED = 0x90/*P2*/;
+__sbit SEGMENT_ENABLE = 0x87/*P0.7*/;
+__sbit INTR1 = 0xB3/*P3.3*/;
+__sfr LED = 0x90/*P2*/;
 
 
 /* keypadFinalProcess() Function
