@@ -1,6 +1,6 @@
 대학교 3학년 1학기 마이크로프로세서및HDL 과목을 수강하며 만든 8051 어셈블리어 및 C 언어 실습 파일.  
 <br>
-8051 Assembly and C files while taking Microprocessor and HDL class at University.  
+8051 Assembly and C practice files created while taking Microprocessor and HDL class at University.  
 <br>
 
 ---
